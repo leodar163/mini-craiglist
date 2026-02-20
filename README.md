@@ -1,20 +1,17 @@
 # Guide d'installation et de lancement du projet
 
 ## Installer SurrealDB :
-1 - Télécharger [l'exécutable de SurrealDb version 2.6.2](https://github.com/surrealdb/surrealdb/releases/tag/v2.6.2) (le SDK JS n'est pas encore compatible avec la version 3.0.0).
-<br> Vous pouvez le mettre n'importe où dans vos dossiers. 
+1 - installer SurrealDB avec ```iwr https://windows.surrealdb.com -useb | iex```.
 
-2 - Renommer l'executable en surreal.exe
+2 - Vérifier l'installation en tappant ```surreal version``` dans le terminal.
+<br> Vous devriez avoir ```3.0.0 for windows on x86_64```.
 
-3 - Ajouter l'executable aux variables d'environnement et relancer le terminal
-
-4 - Vérifier l'installation en tappant <code>surreal version</code> dans le terminal
-<br> Vous devriez avoir 2.6.2 for [windows/linux/darwin] on x86_64
+3 - Si l'applet ```surreal``` n'est pas reconnu, essayez de rajouter ```C:\Users\[user]\AppData\Local\SurrealDB\surreal.exe``` à votre PATH.
 
 ## Lancer SurrealDB
-<code>surreal start --log trace --user root --pass root memory</code>
+```surreal start --log trace --user root --pass root memory```
 
-A noter que la mémoire de la db n'est pas persistante et se vide entre chaque lancement. C'est volontaire.
+À noter que la mémoire de la db n'est pas persistante et se vide entre chaque lancement. C'est volontaire.
 
 ## Lancer Next
 ```bash
