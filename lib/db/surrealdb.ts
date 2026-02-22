@@ -5,15 +5,17 @@ const globalForDB = globalThis as unknown as {
     dbPromise: Promise<void> | null;
 };
 
-export const db = globalForDB.db ?? new Surreal();
-
-if (!globalForDB.db) {
-    globalForDB.db = db;
-}
-
 export async function connectDB() {
+    console.log(globalForDB.db);
+    console.log(globalForDB.dbPromise);
+
+    if (!globalForDB.db) {
+        globalForDB.db = new Surreal();
+    }
+
     if (!globalForDB.dbPromise) {
         globalForDB.dbPromise = (async () => {
+            const db = globalForDB.db!;
             try {
                 await db.connect("http://127.0.0.1:8000/rpc");
 
@@ -37,4 +39,11 @@ export async function connectDB() {
     }
 
     return globalForDB.dbPromise;
+}
+
+export async function getDB() {
+    if (!globalForDB.db) {
+        await connectDB();
+    }
+    return globalForDB.db!;
 }

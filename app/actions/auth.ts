@@ -2,14 +2,14 @@
 
 import bcrypt from "bcrypt";
 import {cookies} from "next/headers";
-import {db, connectDB} from "@/lib/db/surrealdb";
-import {DateTime, expr, RecordId, surql, Table} from "surrealdb";
+import {getDB} from "@/lib/db/surrealdb";
+import {DateTime, RecordId, surql, Table} from "surrealdb";
 import {UserDB} from "@/lib/types/user";
 import {convertSessionFromDB, Session, SessionDB} from "@/lib/types/session";
 import {ServerActionResponse} from "@/lib/types/actions";
 
 export async function register(email: string, password: string): ServerActionResponse<undefined> {
-    await connectDB();
+    const db = await getDB();
 
     if (!email || !password) {
         return {success: false, error: new Error("Cannot register as fields are missing")};
@@ -32,7 +32,7 @@ export async function register(email: string, password: string): ServerActionRes
 }
 
 export async function login(email: string, password: string): ServerActionResponse<undefined> {
-    await connectDB();
+    const db = await getDB();
 
     const result = await db
         .query(
@@ -102,7 +102,7 @@ export async function login(email: string, password: string): ServerActionRespon
 }
 
 export async function logout() {
-    await connectDB();
+    const db = await getDB();
 
     const cookieStore = await cookies();
 
@@ -120,18 +120,25 @@ export async function getSession(): ServerActionResponse<Session> {
     const cookieStore = await cookies();
 
     const sessionId = cookieStore.get("session")?.value;
+
     if (!sessionId) return {
         success: false,
         error: new Error("Cannot find session as you are not logged in"),
     };
 
-    await connectDB();
+    const db = await getDB();
 
-    const session = await db.select<SessionDB>(new RecordId('session', sessionId));
-    if (!session) return {
-        success: false,
-        error: new Error("Session not found"),
-    };
+    const sessionResult = await db.select<SessionDB>(new RecordId('session', sessionId));
+    const session = Array.isArray(sessionResult) ? null : sessionResult;
+    console.log("get session = ", session);
+
+    if (!session) {
+        cookieStore.delete("session");
+        return {
+            success: false,
+            error: new Error("Session not found"),
+        };
+    }
 
     if (session.expiresAt.toDate() < new Date()) {
         await db.delete(new RecordId('session', sessionId));
