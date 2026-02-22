@@ -27,7 +27,6 @@ export async function register(email: string, password: string): ServerActionRes
         return {success: true, value: undefined};
     } catch (error) {
         return {success: false, error: error as Error};
-        // return { success: false, error: new Error("Cannot register as email is already used") };
     }
 }
 
@@ -35,10 +34,7 @@ export async function login(email: string, password: string): ServerActionRespon
     const db = await getDB();
 
     const result = await db
-        .query(
-            surql`SELECT *
-                  FROM user
-                  WHERE email = ${email} LIMIT 1`
+        .query("SELECT * FROM user WHERE email = $email LIMIT 1;", {email}
         )
         .collect<[UserDB[]]>();
 
@@ -60,12 +56,8 @@ export async function login(email: string, password: string): ServerActionRespon
         };
     }
 
-    const userId = user.id.id.toString();
-
     const sessionResult = await db.query(
-        surql`SELECT *
-              FROM session
-              WHERE user = ${userId} LIMIT 1`,
+        "SELECT * FROM session WHERE user = $userId LIMIT 1;", {userId: user.id}
     ).collect<[SessionDB[]]>();
 
     let session = sessionResult[0][0] ?? null;
@@ -128,9 +120,8 @@ export async function getSession(): ServerActionResponse<Session> {
 
     const db = await getDB();
 
-    const sessionResult = await db.select<SessionDB>(new RecordId('session', sessionId));
-    const session = Array.isArray(sessionResult) ? null : sessionResult;
-    console.log("get session = ", session);
+    const sessionResult = await db.query<[SessionDB[]]>(`SELECT * FROM session WHERE id = session:${sessionId};`).collect();
+    const session = sessionResult[0][0] ?? null;
 
     if (!session) {
         cookieStore.delete("session");

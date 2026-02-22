@@ -4,7 +4,8 @@ import {getSession} from "@/app/actions/auth";
 export default async function proxy(request: NextRequest) {
     const session = await getSession();
     if (!session.success) {
-        const url = new URL("/login", request.nextUrl);
+        const params = new URLSearchParams( {redirect: request.nextUrl.pathname + request.nextUrl.search });
+        const url = new URL(`/login?${params.toString()}`, request.nextUrl);
         return NextResponse.redirect(url);
     }
 

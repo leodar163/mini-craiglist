@@ -19,6 +19,7 @@ export async function connectDB() {
             try {
                 await db.connect("http://127.0.0.1:8000/rpc");
 
+
                 await db.signin({
                     username: "root",
                     password: "root",

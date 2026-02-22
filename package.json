@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -18,7 +19,8 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "surrealdb": "^2.0.0-beta.1",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "valibot": "^1.2.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

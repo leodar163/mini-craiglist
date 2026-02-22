@@ -3,7 +3,7 @@ import {getSession, login, register} from "@/app/actions/auth";
 
 export async function GET() {
     const email = "dubuntu@yahoo.com";
-    const password = "truc";
+    const password = "trucdeouflesgars";
 
     const registerResponse = await register(email, password);
     if (!registerResponse.success) {
