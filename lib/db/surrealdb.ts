@@ -14,17 +14,23 @@ if (!globalForDB.db) {
 export async function connectDB() {
     if (!globalForDB.dbPromise) {
         globalForDB.dbPromise = (async () => {
-            await db.connect("http://127.0.0.1:8000/rpc");
+            try {
+                await db.connect("http://127.0.0.1:8000/rpc");
 
-            await db.signin({
-                username: "root",
-                password: "root",
-            });
+                await db.signin({
+                    username: "root",
+                    password: "root",
+                });
 
-            await db.use({
-                namespace: "test",
-                database: "test",
-            });
+                await db.use({
+                    namespace: "minicraig-list",
+                    database: "all",
+                });
+            }
+            catch (error) {
+                console.error(error);
+                await db.close();
+            }
 
             console.log("✅ SurrealDB connected");
         })();

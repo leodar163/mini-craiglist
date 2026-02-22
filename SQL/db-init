@@ -1,6 +1,6 @@
 DEFINE TABLE user SCHEMAFULL;
 
-DEFINE FIELD email ON user TYPE string ASSERT string::is::email($value);
+DEFINE FIELD email ON user TYPE string ASSERT string::is_email($value);
 DEFINE FIELD password ON user TYPE string;
 
 DEFINE INDEX email_unique ON user FIELDS email UNIQUE;
@@ -11,4 +11,4 @@ DEFINE TABLE session SCHEMAFULL;
 DEFINE FIELD user ON session TYPE record(user);
 DEFINE FIELD expiresAt ON session TYPE datetime;
 
-DEFINE INDEX session_user_index ON session FIELDS user;
+DEFINE INDEX user_unique ON session FIELDS user UNIQUE;
