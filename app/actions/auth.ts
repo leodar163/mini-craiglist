@@ -2,7 +2,7 @@
 
 import bcrypt from "bcrypt";
 import {cookies} from "next/headers";
-import {getDB} from "@/lib/db/surrealdb";
+import {DBTables, getDB} from "@/lib/db/surrealdb";
 import {DateTime, RecordId, surql, Table} from "surrealdb";
 import {UserDB} from "@/lib/types/user";
 import {convertSessionFromDB, Session, SessionDB} from "@/lib/types/session";
@@ -24,8 +24,10 @@ export async function register(email: string, password: string): ServerActionRes
             password: hash,
         });
 
+        db.close();
         return {success: true, value: undefined};
     } catch (error) {
+        db.close();
         return {success: false, error: error as Error};
     }
 }
@@ -87,6 +89,8 @@ export async function login(email: string, password: string): ServerActionRespon
         path: "/",
     });
 
+    db.close();
+
     return {
         success: true,
         value: undefined,
@@ -105,6 +109,8 @@ export async function logout() {
     }
 
     cookieStore.delete("session");
+
+    db.close();
 }
 
 export async function getSession(): ServerActionResponse<Session> {
@@ -120,8 +126,9 @@ export async function getSession(): ServerActionResponse<Session> {
 
     const db = await getDB();
 
-    const sessionResult = await db.query<[SessionDB[]]>(`SELECT * FROM session WHERE id = session:${sessionId};`).collect();
-    const session = sessionResult[0][0] ?? null;
+    // const sessionResult = await db.query<[SessionDB[]]>(`SELECT * FROM session WHERE id = session:${sessionId};`).collect();
+    // const session = sessionResult[0][0] ?? null;
+    const session = await db.select<SessionDB>(new RecordId(DBTables.session, sessionId));
 
     if (!session) {
         cookieStore.delete("session");
@@ -145,6 +152,8 @@ export async function getSession(): ServerActionResponse<Session> {
         success: false,
         error: new Error("cannot get session's user"),
     }
+
+    db.close();
 
     return {
         success: true,
