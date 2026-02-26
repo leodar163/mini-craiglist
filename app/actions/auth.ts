@@ -3,7 +3,7 @@
 import bcrypt from "bcrypt";
 import {cookies} from "next/headers";
 import {DBTables, getDB} from "@/lib/db/surrealdb";
-import {DateTime, RecordId, surql, Table} from "surrealdb";
+import {DateTime, eq, RecordId, surql, Table} from "surrealdb";
 import {UserDB} from "@/lib/types/user";
 import {convertSessionFromDB, Session, SessionDB} from "@/lib/types/session";
 import {ServerActionResponse} from "@/lib/types/actions";
@@ -35,12 +35,8 @@ export async function register(email: string, password: string): ServerActionRes
 export async function login(email: string, password: string): ServerActionResponse<undefined> {
     const db = await getDB();
 
-    const result = await db
-        .query("SELECT * FROM user WHERE email = $email LIMIT 1;", {email}
-        )
-        .collect<[UserDB[]]>();
-
-    const user = result[0][0] ?? null;
+    const userResults = await db.select<UserDB>(DBTables.user).where(eq("email", email));
+    const user = userResults.length > 0 ? userResults[0] : null;
 
     if (user == null) {
         return {
@@ -58,11 +54,9 @@ export async function login(email: string, password: string): ServerActionRespon
         };
     }
 
-    const sessionResult = await db.query(
-        "SELECT * FROM session WHERE user = $userId LIMIT 1;", {userId: user.id}
-    ).collect<[SessionDB[]]>();
+    const sessionResults = await db.select<SessionDB>(DBTables.session).where(eq("user", user.id));
 
-    let session = sessionResult[0][0] ?? null;
+    let session = sessionResults.length > 0 ? sessionResults[0] : null;
 
     const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
