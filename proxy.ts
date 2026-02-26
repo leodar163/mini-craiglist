@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {getSession} from "@/app/actions/auth";
+import {getSession} from "@/app/actions/auth.actions";
 
 export default async function proxy(request: NextRequest) {
     const session = await getSession();

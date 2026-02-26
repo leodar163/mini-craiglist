@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input";
 import {valibotResolver} from "@hookform/resolvers/valibot";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {login, register} from "@/app/actions/auth";
+import {login, register} from "@/app/actions/auth.actions";
 import {useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {RegisterData, registerSchema} from "@/lib/validation-schemas/register-data";

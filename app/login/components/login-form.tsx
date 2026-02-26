@@ -7,7 +7,7 @@ import {LoginData, loginSchema} from "@/lib/validation-schemas/login-data";
 import {valibotResolver} from "@hookform/resolvers/valibot";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {login} from "@/app/actions/auth";
+import {login} from "@/app/actions/auth.actions";
 import {useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 

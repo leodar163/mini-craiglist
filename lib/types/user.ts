@@ -6,6 +6,10 @@ export interface User {
     password: string;
 }
 
+export interface UpdateUser {
+
+}
+
 export interface UserDB {
     id: RecordId;
     email: string;

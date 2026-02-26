@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import {getSession, login, register} from "@/app/actions/auth";
+import {getSession, login, register} from "@/app/actions/auth.actions";
 
 export async function GET() {
     const email = "dubuntu@yahoo.com";
