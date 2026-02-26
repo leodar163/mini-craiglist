@@ -10,6 +10,8 @@ import {login, register} from "@/app/actions/auth.actions";
 import {useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {RegisterData, registerSchema} from "@/lib/validation-schemas/register-data";
+import {InputGroup, InputGroupTextarea} from "@/components/ui/input-group";
+import bcrypt from "bcrypt";
 
 export interface RegisterFormProps {
     onRegisterButtonHit?: () => void;
@@ -27,13 +29,17 @@ export default function LoginForm({onRegisterButtonHit}: RegisterFormProps) {
             email: "",
             password: "",
             passwordValidation: "",
+            pseudo: "",
+            town: "",
+            bio: "",
         },
     });
 
-    async function onSubmit(data: RegisterData) {
+    async function onSubmit({passwordValidation, ...data}: RegisterData) {
         setValidating(true);
         setGlobalError(null);
-        const registerResult = await register(data.email, data.password);
+
+        const registerResult = await register(data);
         if (!registerResult.success) {
             setGlobalError(registerResult.error);
             setValidating(false);
@@ -62,6 +68,53 @@ export default function LoginForm({onRegisterButtonHit}: RegisterFormProps) {
                     onSubmit={form.handleSubmit(onSubmit)}
                 >
                     <FieldGroup>
+                        <Controller
+                            name={"pseudo"}
+                            control={form.control}
+                            render={({field, fieldState}) =>
+                                <Field aria-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor={field.name}>Pseudo</FieldLabel>
+                                    <Input
+                                        {...field}
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder={"Alfred"}
+                                    />
+                                    {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
+                                </Field>
+                            }
+                        />
+                        <Controller
+                            name={"town"}
+                            control={form.control}
+                            render={({field, fieldState}) =>
+                                <Field aria-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor={field.name}>Ville</FieldLabel>
+                                    <Input
+                                        {...field}
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder={"Gotham City"}
+                                    />
+                                    {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
+                                </Field>
+                            }
+                        />
+                        <Controller
+                            name={"bio"}
+                            control={form.control}
+                            render={({field, fieldState}) =>
+                                <Field aria-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor={field.name}>Bio</FieldLabel>
+                                    <InputGroup>
+                                        <InputGroupTextarea
+                                            {...field}
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder={"Courte description de vous, vos besoins, vos compétences..."}
+                                        />
+                                    </InputGroup>
+                                    {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
+                                </Field>
+                            }
+                        />
                         <Controller
                             name={"email"}
                             control={form.control}
@@ -116,7 +169,8 @@ export default function LoginForm({onRegisterButtonHit}: RegisterFormProps) {
             <CardFooter>
                 <Field orientation={"horizontal"}>
                     <Button disabled={validating} type={"submit"} form={"form-login"}>s&apos;inscrire</Button>
-                    <Button disabled={validating} variant={"secondary"} onClick={onRegisterButtonHit}>se connecter</Button>
+                    <Button disabled={validating} variant={"secondary"} onClick={onRegisterButtonHit}>se
+                        connecter</Button>
                     {globalError && <FieldError errors={[globalError]}/>}
                 </Field>
             </CardFooter>

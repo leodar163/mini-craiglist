@@ -4,23 +4,18 @@ import bcrypt from "bcrypt";
 import {cookies} from "next/headers";
 import {DBTables, getDB} from "@/lib/db/surrealdb";
 import {DateTime, eq, RecordId, surql, Table} from "surrealdb";
-import {UserDB} from "@/lib/types/user";
+import {CreateUser, UserDB} from "@/lib/types/user";
 import {convertSessionFromDB, Session, SessionDB} from "@/lib/types/session";
 import {ServerActionResponse} from "@/lib/types/actions";
 
-export async function register(email: string, password: string): ServerActionResponse<undefined> {
+export async function register(newUser: CreateUser): ServerActionResponse<undefined> {
     const db = await getDB();
 
-    if (!email || !password) {
-        return {success: false, error: new Error("Cannot register as fields are missing")};
-    }
-
-    const hash = await bcrypt.hash(password, 12);
+    const hash = await bcrypt.hash(newUser.password, 12);
 
     try {
-
         await db.create<UserDB>(new Table("user")).content({
-            email,
+            ...newUser,
             password: hash,
         });
 

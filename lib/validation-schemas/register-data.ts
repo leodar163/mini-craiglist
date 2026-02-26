@@ -1,8 +1,13 @@
 import * as v from "valibot";
+import {minLength} from "valibot";
 
 const passwordLength = 8;
 
-export const registerSchema = v.pipe(v.object({
+export const registerSchema = v.pipe(
+    v.object({
+        pseudo: v.pipe(v.string(), minLength(1)),
+        town: v.pipe(v.string(), minLength(1)),
+        bio: v.pipe(v.string(), minLength(1)),
         email: v.pipe(
             v.string(),
             v.email("adresse mail invalide")
