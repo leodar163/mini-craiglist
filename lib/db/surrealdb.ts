@@ -3,6 +3,8 @@ import {Surreal, Table} from "surrealdb";
 export const DBTables = {
     user: new Table("user"),
     session: new Table("session"),
+    advertisement: new Table("advertisement"),
+    wroteAd: new Table("wrote_ad"),
 }
 
 export async function getDB() {

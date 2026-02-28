@@ -11,7 +11,6 @@ import {useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {RegisterData, registerSchema} from "@/lib/validation-schemas/register-data";
 import {InputGroup, InputGroupTextarea} from "@/components/ui/input-group";
-import bcrypt from "bcrypt";
 
 export interface RegisterFormProps {
     onRegisterButtonHit?: () => void;

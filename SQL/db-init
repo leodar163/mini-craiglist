@@ -1,14 +1,50 @@
+surreal sql --conn http://127.0.0.1:8000 \
+            --user root \
+            --pass root
+
+--Define namepasace and database
+DEFINE NAMESPACE minicraig-list;
+USE NAMESPACE minicraig-list;
+
+DEFINE DATABASE all;
+USE DATABASE all;
+
+-- Define user table
 DEFINE TABLE user SCHEMAFULL;
 
 DEFINE FIELD email ON user TYPE string ASSERT string::is_email($value);
 DEFINE FIELD password ON user TYPE string;
+DEFINE FIELD pseudo ON user TYPE string;
+DEFINE FIELD town ON user TYPE string;
+DEFINE FIELD bio ON user TYPE string;
 
 DEFINE INDEX email_unique ON user FIELDS email UNIQUE;
 
-
+-- Define session table
 DEFINE TABLE session SCHEMAFULL;
 
-DEFINE FIELD user ON session TYPE record(user);
+DEFINE FIELD user ON session TYPE record<user>;
 DEFINE FIELD expiresAt ON session TYPE datetime;
 
 DEFINE INDEX user_unique ON session FIELDS user UNIQUE;
+
+-- Define advertisement table
+DEFINE TABLE advertisement SCHEMAFULL;
+
+DEFINE FIELD type ON advertisement TYPE "offer" | "request";
+DEFINE FIELD title ON advertisement TYPE string;
+DEFINE FIELD categories ON advertisement TYPE array<string>;
+DEFINE FIELD description ON advertisement TYPE string;
+DEFINE FIELD town ON advertisement TYPE string;
+DEFINE FIELD availability ON advertisement TYPE string;
+DEFINE FIELD pricing ON advertisement TYPE "free" | "hourly" | "fixed";
+DEFINE FIELD price ON advertisement TYPE option<float>;
+DEFINE FIELD modality ON advertisement TYPE "remote" | "at provider" | "at customer";
+DEFINE FIELD status ON advertisement TYPE "draft" | "published" | "archived" DEFAULT "draft";
+
+-- Define relation of authorship between user and
+DEFINE TABLE wrote_ad SCHEMAFULL;
+
+DEFINE FIELD user ON wrote_ad TYPE record<user>;
+DEFINE FIELD advertisement ON wrote_ad TYPE record<advertisement>;
+

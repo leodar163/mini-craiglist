@@ -1,14 +1,13 @@
 import {DateTime, RecordId} from "surrealdb";
 import {convertUserFromDB, User, UserDB} from "@/lib/types/user";
+import {WithID, WithIdDB} from "@/lib/types/common";
 
-export interface Session {
-    id: string
+export interface Session extends WithID {
     user: User;
     expiresAt: Date;
 }
 
-export interface SessionDB {
-    id: RecordId,
+export interface SessionDB extends WithIdDB {
     user: RecordId,
     expiresAt: DateTime,
 }

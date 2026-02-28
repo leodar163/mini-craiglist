@@ -1,7 +1,7 @@
 import {RecordId} from "surrealdb";
+import {Common, CommonDB} from "@/lib/types/common";
 
-export interface User {
-    id: string;
+export interface User extends Common{
     email: string;
     password: string;
     pseudo: string;
@@ -23,8 +23,7 @@ export interface UpdateUser {
     bio?: string;
 }
 
-export interface UserDB {
-    id: RecordId;
+export interface UserDB extends CommonDB{
     email: string;
     password: string;
     pseudo: string;
@@ -36,5 +35,7 @@ export function convertUserFromDB(...users: UserDB[]): User[] {
     return users.map(user => ({
         ...user,
         id: user.id.id.toString(),
+        createdAT: user.createAt.toDate(),
+        updatedAT: user.updateAT.toDate(),
     }))
 }
