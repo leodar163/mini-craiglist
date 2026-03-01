@@ -129,10 +129,54 @@ function InputGroupText({className, ...props}: React.ComponentProps<"span">) {
     )
 }
 
-function InputGroupInput({
-                             className,
-                             ...props
-                         }: React.ComponentProps<"input">) {
+export interface InputGroupTextInputProps extends React.ComponentProps<"input"> {
+    onValidate?: (value: string) => void;
+    onCancel?: () => void;
+}
+
+function InputGroupInput(
+    {
+        className,
+        onValidate,
+        onCancel,
+        onBlur,
+        onKeyDown,
+        onChange,
+        ...props
+    }: InputGroupTextInputProps) {
+    const [value, setValue] = React.useState('');
+    const ref = useRef<HTMLInputElement>(null);
+    const blurCause = useRef<"escape" | "enter">(null);
+
+    function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === 'Enter') {
+            blurCause.current = "enter"
+            ref?.current?.blur();
+        }
+        if (event.key === 'Escape') {
+            blurCause.current = "escape"
+            ref?.current?.blur();
+        }
+        onKeyDown?.(event);
+    }
+
+    function handleOnBlur(event: React.FocusEvent<HTMLInputElement>) {
+        if (blurCause.current === "escape") {
+            onCancel?.();
+        } else {
+            onValidate?.(value);
+        }
+
+        blurCause.current = null;
+
+        onBlur?.(event);
+    }
+
+    function handleOnChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setValue(event.target.value);
+        onChange?.(event);
+    }
+
     return (
         <Input
             data-slot="input-group-control"
@@ -140,6 +184,9 @@ function InputGroupInput({
                 "flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
                 className
             )}
+            onBlur={handleOnBlur}
+            onChange={handleOnChange}
+            onKeyDown={handleKeyDown}
             {...props}
         />
     )
@@ -180,8 +227,7 @@ function InputGroupTextarea(
     function handleOnBlur(event: React.FocusEvent<HTMLTextAreaElement>) {
         if (blurCause.current === "escape") {
             onCancel?.();
-        }
-        else {
+        } else {
             onValidate?.(value);
         }
 
@@ -190,7 +236,7 @@ function InputGroupTextarea(
         onBlur?.(event);
     }
 
-    function handleOnChange(event : React.ChangeEvent<HTMLTextAreaElement>) {
+    function handleOnChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
         setValue(event.target.value);
         onChange?.(event);
     }

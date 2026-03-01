@@ -1,9 +1,15 @@
 import {useState} from "react";
 import {useRouter} from "next/navigation";
-import {Controller, useForm} from "react-hook-form";
+import {Controller, useForm, useWatch} from "react-hook-form";
 import {valibotResolver} from "@hookform/resolvers/valibot";
 import {CreateAdvertisementData, createAdvertisementSchema} from "@/lib/validation-schemas/create-advertisement-data";
-import {Advertisement, AdvertisementModality, AdvertisementPricing, AdvertisementType} from "@/lib/types/advertisement";
+import {
+    Advertisement,
+    AdvertisementModality,
+    AdvertisementPricing,
+    AdvertisementType, translateAdvertisementModality, translateAdvertisementPricing,
+    translateAdvertisementType
+} from "@/lib/types/advertisement";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
@@ -21,7 +27,6 @@ import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
 import {createAdvertisement} from "@/app/actions/advertisement.actions";
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
-import {ScrollArea} from "@/components/ui/scroll-area";
 
 export interface CreateAdvertisementFormProps {
     afterSubmission?: (advertisement: Advertisement) => void;
@@ -46,6 +51,11 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
             modality: AdvertisementModality.AT_CUSTOMER,
             categories: []
         },
+    });
+
+    const watchedPricing = useWatch({
+        control: form.control,
+        name: "pricing"
     });
 
     async function onSubmit(data: CreateAdvertisementData) {
@@ -87,17 +97,23 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                     <Field aria-invalid={fieldState.invalid}>
                                         <FieldLabel htmlFor={field.name}>Type</FieldLabel>
                                         <Select
-                                            {...field}
+                                            name={field.name}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
                                             aria-invalid={fieldState.invalid}
                                         >
-                                            <SelectTrigger>
+                                            <SelectTrigger aria-invalid={fieldState.invalid}>
                                                 <SelectValue/>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>type d&apos;annonce</SelectLabel>
                                                     {Object.values(AdvertisementType).map((value, index) =>
-                                                        <SelectItem value={value} key={index}>value</SelectItem>
+                                                        <SelectItem
+                                                            value={value}
+                                                            key={index}>
+                                                            {translateAdvertisementType(value)}
+                                                        </SelectItem>
                                                     )}
                                                 </SelectGroup>
                                             </SelectContent>
@@ -181,17 +197,21 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                     <Field aria-invalid={fieldState.invalid}>
                                         <FieldLabel htmlFor={field.name}>Type de Tarif</FieldLabel>
                                         <Select
-                                            {...field}
+                                            name={field.name}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
                                             aria-invalid={fieldState.invalid}
                                         >
-                                            <SelectTrigger>
+                                            <SelectTrigger aria-invalid={fieldState.invalid}>
                                                 <SelectValue/>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>type d&apos;annonce</SelectLabel>
                                                     {Object.values(AdvertisementPricing).map((value, index) =>
-                                                        <SelectItem value={value} key={index}>value</SelectItem>
+                                                        <SelectItem value={value} key={index}>
+                                                            {translateAdvertisementPricing(value)}
+                                                        </SelectItem>
                                                     )}
                                                 </SelectGroup>
                                             </SelectContent>
@@ -200,7 +220,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                     </Field>
                                 }
                             />
-                            {form.getValues("pricing") != AdvertisementPricing.FREE &&
+                            {watchedPricing != AdvertisementPricing.FREE &&
                                 <Controller
                                     name={"price"}
                                     control={form.control}
@@ -213,8 +233,8 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                                     type={"number"}
                                                     aria-invalid={fieldState.invalid}
                                                 />
-                                            </InputGroup>
                                             <InputGroupAddon align={"inline-start"}>€</InputGroupAddon>
+                                            </InputGroup>
                                             {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
                                         </Field>
                                     }
@@ -227,17 +247,21 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                     <Field aria-invalid={fieldState.invalid}>
                                         <FieldLabel htmlFor={field.name}>Modalité de déplacement</FieldLabel>
                                         <Select
-                                            {...field}
+                                            name={field.name}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
                                             aria-invalid={fieldState.invalid}
                                         >
-                                            <SelectTrigger>
+                                            <SelectTrigger aria-invalid={fieldState.invalid}>
                                                 <SelectValue/>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>type d&apos;annonce</SelectLabel>
                                                     {Object.values(AdvertisementModality).map((value, index) =>
-                                                        <SelectItem value={value} key={index}>value</SelectItem>
+                                                        <SelectItem value={value} key={index}>
+                                                            {translateAdvertisementModality(value)}
+                                                        </SelectItem>
                                                     )}
                                                 </SelectGroup>
                                             </SelectContent>
