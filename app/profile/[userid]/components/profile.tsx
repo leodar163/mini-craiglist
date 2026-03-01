@@ -8,6 +8,8 @@ import {Advertisement} from "@/lib/types/advertisement";
 import {useState} from "react";
 import AdvertisementCard from "@/app/profile/[userid]/components/advertisement-card";
 import {Button} from "@/components/ui/button";
+import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
+import CreateAdvertisementForm from "@/app/profile/[userid]/components/create-advertisement-form";
 
 
 export interface ProfileProps {
@@ -40,9 +42,9 @@ export default function Profile({user, advertisements}: ProfileProps) {
                 {localeAdvertisements.map((advertisement, index) => (
                     <AdvertisementCard advertisement={advertisement} key={index}/>
                 ))}
-                <Button>
-                    ajouter annoncer
-                </Button>
+                <CreateAdvertisementForm
+                    afterSubmission={ad => setLocaleAdvertisements(old => [...old, ad])}
+                />
             </FieldGroup>
         </div>
     )

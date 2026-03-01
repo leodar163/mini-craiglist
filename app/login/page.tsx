@@ -11,7 +11,7 @@ export default function LoginPage() {
             {
                 !register ?
                     <LoginForm onRegisterButtonHit={() => setRegister(true)}/>
-                    : <RegisterForm onRegisterButtonHit={() => setRegister(false)}/>
+                    : <RegisterForm onLoginButtonHit={() => setRegister(false)}/>
             }
         </div>
     )

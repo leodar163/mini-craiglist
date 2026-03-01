@@ -1,5 +1,7 @@
 import {getUser} from "@/app/actions/user.actions";
 import Profile from "@/app/profile/[userid]/components/profile";
+import {getAdvertisementsByUser} from "@/app/actions/advertisement.actions";
+import {Advertisement} from "@/lib/types/advertisement";
 
 export default async function ProfilePage({params}: {params: Promise<{userid: string}>}) {
     const {userid} = await params;
@@ -8,7 +10,19 @@ export default async function ProfilePage({params}: {params: Promise<{userid: st
 
     const user = userResponse.success ? userResponse.value : null;
 
+    const advertisementResponse = user == null ? null : await getAdvertisementsByUser(user?.id);
+    let advertisements: Advertisement[] = [];
+
+    if (advertisementResponse != null) {
+        if (!advertisementResponse.success) {
+            console.error(advertisementResponse.error);
+        }
+        else {
+            advertisements = advertisementResponse.value;
+        }
+    }
+
     return <div>
-        <Profile user={user}/>
+        <Profile user={user} advertisements={advertisements}/>
     </div>
 }

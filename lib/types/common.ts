@@ -5,14 +5,14 @@ export interface WithID {
 }
 
 export interface Common extends WithID {
-    createdAT: Date,
-    updatedAT: Date,
+    createdAt: Date,
+    updatedAt: Date,
 }
 
 export interface WithIdDB {
     id: RecordId;
 }
 export interface CommonDB extends WithIdDB {
-    createAt: DateTime,
-    updateAT: DateTime,
+    createdAt: DateTime,
+    updatedAt: DateTime,
 }

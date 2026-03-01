@@ -3,8 +3,8 @@ surreal sql --conn http://127.0.0.1:8000 \
             --pass root
 
 --Define namepasace and database
-DEFINE NAMESPACE minicraig-list;
-USE NAMESPACE minicraig-list;
+DEFINE NAMESPACE minicraig_list;
+USE NAMESPACE minicraig_list;
 
 DEFINE DATABASE all;
 USE DATABASE all;
@@ -33,7 +33,15 @@ DEFINE TABLE advertisement SCHEMAFULL;
 
 DEFINE FIELD type ON advertisement TYPE "offer" | "request";
 DEFINE FIELD title ON advertisement TYPE string;
-DEFINE FIELD categories ON advertisement TYPE array<string>;
+DEFINE FIELD categories ON advertisement TYPE array<"craft" |
+                                                    "care" |
+                                                    "studies" |
+                                                    "environment" |
+                                                    "cleaning" |
+                                                    "politics" |
+                                                    "give away" |
+                                                    "sociability" |
+                                                    "language" >;
 DEFINE FIELD description ON advertisement TYPE string;
 DEFINE FIELD town ON advertisement TYPE string;
 DEFINE FIELD availability ON advertisement TYPE string;

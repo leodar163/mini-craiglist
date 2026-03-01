@@ -11,12 +11,13 @@ import {useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {RegisterData, registerSchema} from "@/lib/validation-schemas/register-data";
 import {InputGroup, InputGroupTextarea} from "@/components/ui/input-group";
+import {Spinner} from "@/components/ui/spinner";
 
 export interface RegisterFormProps {
-    onRegisterButtonHit?: () => void;
+    onLoginButtonHit?: () => void;
 }
 
-export default function LoginForm({onRegisterButtonHit}: RegisterFormProps) {
+export default function LoginForm({onLoginButtonHit}: RegisterFormProps) {
     const [validating, setValidating] = useState(false);
     const [globalError, setGlobalError] = useState<Error | null>(null);
     const searchParams = useSearchParams();
@@ -40,6 +41,7 @@ export default function LoginForm({onRegisterButtonHit}: RegisterFormProps) {
 
         const registerResult = await register(data);
         if (!registerResult.success) {
+            console.error("at register:", registerResult.error);
             setGlobalError(registerResult.error);
             setValidating(false);
             return;
@@ -47,6 +49,7 @@ export default function LoginForm({onRegisterButtonHit}: RegisterFormProps) {
 
         const loginResult = await login(data.email, data.password);
         if (!loginResult.success) {
+            console.error("attempted to login:", loginResult.error);
             setGlobalError(loginResult.error);
             setValidating(false);
             return;
@@ -167,8 +170,11 @@ export default function LoginForm({onRegisterButtonHit}: RegisterFormProps) {
             </CardContent>
             <CardFooter>
                 <Field orientation={"horizontal"}>
-                    <Button disabled={validating} type={"submit"} form={"form-login"}>s&apos;inscrire</Button>
-                    <Button disabled={validating} variant={"secondary"} onClick={onRegisterButtonHit}>se
+                    <Button disabled={validating} type={"submit"} form={"form-login"}>
+                        {validating && <Spinner data-icon="inline-start"/>}
+                        s&apos;inscrire
+                    </Button>
+                    <Button disabled={validating} variant={"secondary"} onClick={onLoginButtonHit}>se
                         connecter</Button>
                     {globalError && <FieldError errors={[globalError]}/>}
                 </Field>

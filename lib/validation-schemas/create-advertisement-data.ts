@@ -1,5 +1,10 @@
 import * as v from "valibot";
-import {AdvertisementModality, AdvertisementPricing, AdvertisementType} from "@/lib/types/advertisement";
+import {
+    AdvertisementCategory,
+    AdvertisementModality,
+    AdvertisementPricing,
+    AdvertisementType
+} from "@/lib/types/advertisement";
 
 
 export const createAdvertisementSchema = v.object({
@@ -23,7 +28,7 @@ export const createAdvertisementSchema = v.object({
         v.minValue(0, "doit être égal ou supérieur à 0")
     ),
     modality: v.enum(AdvertisementModality, "doit être un type de modalité valide"),
-    categories: v.array(v.string()),
+    categories: v.array(v.enum(AdvertisementCategory, "doit être une catégorie valide")),
 
 })
 

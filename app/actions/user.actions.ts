@@ -15,6 +15,7 @@ export async function getUser(userId: string): ServerActionResponse<User> {
 
     const db = await getDB();
     const user = await db.select<UserDB>(new RecordId(DBTables.user, userId));
+    db.close();
 
     if (!user) {
         return {
@@ -36,6 +37,7 @@ export async function updateUser(userId: string, update: UpdateUser): ServerActi
     }
     const db = await getDB();
     const user = await db.update<UserDB>(new RecordId(DBTables.user, userId)).content({...update});
+    db.close();
 
     if (!user) {
         return {
@@ -57,6 +59,7 @@ export async function deleteUser(userId: string): ServerActionResponse<undefined
     }
     const db = await getDB();
     const user = await db.delete<UserDB>(new RecordId(DBTables.user, userId));
+    db.close();
 
     if (!user) {
         return {

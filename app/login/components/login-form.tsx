@@ -10,6 +10,7 @@ import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components
 import {login} from "@/app/actions/auth.actions";
 import {useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
+import {Spinner} from "@/components/ui/spinner";
 
 export interface LoginFormProps {
     onRegisterButtonHit?: () => void;
@@ -91,7 +92,10 @@ export default function LoginForm({onRegisterButtonHit}: LoginFormProps) {
             </CardContent>
             <CardFooter>
                 <Field orientation={"horizontal"}>
-                    <Button disabled={validating} type={"submit"} form={"form-login"}>se connecter</Button>
+                    <Button disabled={validating} type={"submit"} form={"form-login"}>
+                        {validating && <Spinner data-icon="inline-start"/>}
+                        se connecter
+                    </Button>
                     <Button disabled={validating} variant={"secondary"} onClick={onRegisterButtonHit}>s&apos;inscrire</Button>
                     {globalError && <FieldError errors={[globalError]}/>}
                 </Field>

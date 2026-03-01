@@ -18,11 +18,13 @@ export async function createAdvertisement(create: CreateAdvertisement): ServerAc
     if (!session.success) {
         return session;
     }
-    const db = await getDB();
+    let db = await getDB();
 
     const adResults = await db.create<AdvertisementDB>(DBTables.advertisement).content({
         ...create
     });
+
+    await db.close();
 
     const ad = adResults[0];
 
@@ -33,8 +35,11 @@ export async function createAdvertisement(create: CreateAdvertisement): ServerAc
         }
     }
 
+    db = await getDB();
     const relationResult = await db.relate<RelationDB>(new RecordId(DBTables.user, session.value.user.id), DBTables.wroteAd, ad.id).unique();
+    await db.close();
 
+    db = await getDB();
     if (!relationResult) {
         db.delete(ad.id);
         return {
@@ -42,8 +47,7 @@ export async function createAdvertisement(create: CreateAdvertisement): ServerAc
             error: new Error(`Impossible to create advertisement "${create.title}" because of authorship with user "${session.value.user.pseudo}"`)
         }
     }
-
-    db.close();
+    await db.close();
 
     return {
         success: true,
@@ -119,9 +123,9 @@ export async function getAdvertisementsByUser(userId: string): ServerActionRespo
 
     try {
         const [adResults] = await db.query<[AdvertisementDB[]]>(
-            surql`SELECT VALUE ->wrote_ad->advertisement.
+            surql`SELECT VALUE ->wrote_ad->advertisement.*
                   FROM ${userRecordId}
-                  WHERE ->wrote_ad ->advertisement.status INSIDE [${allowedStatus}];`
+                  WHERE ->wrote_ad->advertisement.status INSIDE [${allowedStatus}];`
         ).collect();
 
         return {
@@ -130,9 +134,10 @@ export async function getAdvertisementsByUser(userId: string): ServerActionRespo
         };
     }
     catch (error) {
+        console.log(error);
         return {
             success: false,
-            error: error as Error
+            error: error instanceof Error ? new Error(error.message) : new Error("Unknown DB error")
         };
     }
     finally {

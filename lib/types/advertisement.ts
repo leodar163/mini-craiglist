@@ -1,5 +1,4 @@
 import {RecordId} from "surrealdb";
-import {WithIdDB} from "@/lib/types/common";
 
 export enum AdvertisementType {
     OFFER = "offer",
@@ -24,12 +23,24 @@ export enum AdvertisementStatus {
     ARCHIVED = "archived",
 }
 
+export enum AdvertisementCategory {
+    CRAFT = "craft",
+    CARE = "care",
+    STUDIES = "studies",
+    ENVIRONMENT = "environment",
+    CLEANING = "cleaning",
+    POLITICS = "politics",
+    GIVEAWAY = "give away",
+    SOCIABILITY = "sociability",
+    LANGUAGE = "language",
+}
+
 export interface Advertisement {
     id: string;
     title: string;
     description: string;
     type: AdvertisementType;
-    categories: string[];
+    categories: AdvertisementCategory[];
     town: string;
     availability: string;
     pricing: AdvertisementPricing,
@@ -42,7 +53,7 @@ export interface CreateAdvertisement {
     type: AdvertisementType;
     title: string;
     description: string;
-    categories: string[];
+    categories: AdvertisementCategory[];
     town: string;
     availability: string;
     pricing: AdvertisementPricing,
@@ -54,7 +65,7 @@ export interface UpdateAdvertisement {
     type?: AdvertisementType;
     title?: string;
     description: string;
-    categories?: string[];
+    categories?: AdvertisementCategory[];
     town?: string;
     availability?: string;
     pricing?: AdvertisementPricing,
@@ -67,7 +78,7 @@ export interface AdvertisementDB {
     type: AdvertisementType;
     description: string;
     title: string;
-    categories: string[];
+    categories: AdvertisementCategory[];
     town: string;
     availability: string;
     pricing: AdvertisementPricing,
