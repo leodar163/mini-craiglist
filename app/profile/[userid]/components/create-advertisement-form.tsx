@@ -230,10 +230,16 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                             <InputGroup>
                                                 <InputGroupInput
                                                     {...field}
+                                                    onChange={event =>
+                                                        field.onChange(event.target.value == ""
+                                                            ? ""
+                                                            : Number(event.target.value)
+                                                        )
+                                                    }
                                                     type={"number"}
                                                     aria-invalid={fieldState.invalid}
                                                 />
-                                            <InputGroupAddon align={"inline-start"}>€</InputGroupAddon>
+                                                <InputGroupAddon align={"inline-start"}>€</InputGroupAddon>
                                             </InputGroup>
                                             {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
                                         </Field>

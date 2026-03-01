@@ -8,7 +8,7 @@ export interface AdvertisementCardProps {
 
 export default function AdvertisementCard({ advertisement }: AdvertisementCardProps) {
     return (
-        <Card>
+        <Card className={"w-48"}>
             <CardHeader>
                 <CardTitle>
                     {advertisement.title}
