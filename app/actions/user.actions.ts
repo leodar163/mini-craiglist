@@ -36,7 +36,7 @@ export async function updateUser(userId: string, update: UpdateUser): ServerActi
         return session;
     }
     const db = await getDB();
-    const user = await db.update<UserDB>(new RecordId(DBTables.user, userId)).content({...update});
+    const user = await db.update<UserDB>(new RecordId(DBTables.user, userId)).merge({...update});
     db.close();
 
     if (!user) {

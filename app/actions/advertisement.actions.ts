@@ -62,7 +62,7 @@ export async function updateAdvertisement(id: string, update: UpdateAdvertisemen
     }
     const db = await getDB();
 
-    const adResult = await db.update<AdvertisementDB>(new RecordId(DBTables.advertisement, id)).content({...update});
+    const adResult = await db.update<AdvertisementDB>(new RecordId(DBTables.advertisement, id)).merge({...update});
 
     if (!adResult) {
         return {
