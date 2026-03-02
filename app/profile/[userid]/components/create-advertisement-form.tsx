@@ -89,7 +89,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={
-                <Button>créer une annonce</Button>
+                <Button variant={"secondary"}>créer une annonce</Button>
             }/>
             <form
                 id={"create-advertisement-form"}

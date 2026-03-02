@@ -1,7 +1,7 @@
 "use client";
 
 import {UpdateUser, User} from "@/lib/types/user";
-import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
+import {Field, FieldGroup, FieldLabel, FieldTitle} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Advertisement} from "@/lib/types/advertisement";
 import {useState} from "react";
@@ -68,7 +68,15 @@ export default function Profile({user, advertisements}: ProfileProps) {
                     </Field>
                 </FieldGroup>
                 <FieldGroup>
-                    <div className={""}>
+                    <FieldTitle>
+                        <div className={"text-lg"}>Annonces</div>
+                        <div>
+                            <CreateAdvertisementForm
+                                afterSubmission={ad => setLocaleAdvertisements(old => [...old, ad])}
+                            />
+                        </div>
+                    </FieldTitle>
+                    <div className={"flex flex-wrap gap-4"}>
                         {localeAdvertisements.length > 0
                             ? localeAdvertisements.map((advertisement, index) => (
                                 <AdvertisementCard advertisement={advertisement} key={index}/>
@@ -76,11 +84,7 @@ export default function Profile({user, advertisements}: ProfileProps) {
                             : "Aucune annonce"
                         }
                     </div>
-                    <div>
-                        <CreateAdvertisementForm
-                            afterSubmission={ad => setLocaleAdvertisements(old => [...old, ad])}
-                        />
-                    </div>
+
                 </FieldGroup>
             </div>
         </PageLayout>

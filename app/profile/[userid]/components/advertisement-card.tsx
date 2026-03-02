@@ -1,4 +1,9 @@
-import {Advertisement, AdvertisementPricing, translateAdvertisementType} from "@/lib/types/advertisement";
+import {
+    Advertisement,
+    AdvertisementPricing,
+    translateAdvertisementCategory,
+    translateAdvertisementType
+} from "@/lib/types/advertisement";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {MapPinIcon} from "lucide-react";
@@ -9,7 +14,7 @@ export interface AdvertisementCardProps {
 
 export default function AdvertisementCard({advertisement}: AdvertisementCardProps) {
     return (
-        <Card className={"w-48"}>
+        <Card className={"w-48 h-48"}>
             <CardHeader>
                 <CardTitle className={"text-xl"}>
                     {advertisement.title}
@@ -23,11 +28,11 @@ export default function AdvertisementCard({advertisement}: AdvertisementCardProp
                     <MapPinIcon className={"w-4 h-4"}/> {advertisement.town}
                 </div>
             </CardHeader>
-            <CardContent>
-                <div className={"grid-auto-columns grid-auto-rows grid-flow-col gap-2"}>
+            <CardContent >
+                <div className={"flex flex-wrap gap-1"}>
                     {advertisement.categories.map(category => (
-                        <Badge key={category}>
-                            {category}
+                        <Badge key={category} variant={"secondary"}>
+                            {translateAdvertisementCategory(category)}
                         </Badge>
                     ))}
                 </div>
