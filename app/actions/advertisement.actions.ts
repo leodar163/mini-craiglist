@@ -124,9 +124,10 @@ export async function getAdvertisementsByUser(userId: string): ServerActionRespo
     const query = surql`
         SELECT array::flatten(->wrote_ad->advertisement[
         WHERE status INSIDE ${allowedStatus}
-    ].* ) AS ads
+        ].*) AS ads
         FROM ${userRecordId};
     `;
+
 
     try {
         //Le type de retour de la query est PARTICULIEREMENT difficile à cerner...
@@ -135,10 +136,11 @@ export async function getAdvertisementsByUser(userId: string): ServerActionRespo
         ).collect();
         await db.close();
 
-
         return {
             success: true,
-            value: convertAdvertisementDB(...adResults.ads)
+            value: convertAdvertisementDB(...adResults
+                .ads.sort((a, b) => a.createdAt.compare(b.createdAt))
+            )
         };
     } catch (error) {
         return {

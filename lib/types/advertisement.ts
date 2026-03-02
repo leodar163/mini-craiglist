@@ -1,4 +1,5 @@
 import {RecordId} from "surrealdb";
+import {Common, CommonDB} from "@/lib/types/common";
 
 export enum AdvertisementType {
     OFFER = "offer",
@@ -100,8 +101,7 @@ export function translateAdvertisementCategory(value: AdvertisementCategory) {
     }
 }
 
-export interface Advertisement {
-    id: string;
+export interface Advertisement extends Common{
     title: string;
     description: string;
     type: AdvertisementType;
@@ -138,8 +138,7 @@ export interface UpdateAdvertisement {
     modality?: AdvertisementModality;
 }
 
-export interface AdvertisementDB {
-    id: RecordId,
+export interface AdvertisementDB extends CommonDB {
     type: AdvertisementType;
     description: string;
     title: string;
@@ -155,6 +154,10 @@ export interface AdvertisementDB {
 
 export function convertAdvertisementDB(...advertisements: AdvertisementDB[]): Advertisement[] {
     return advertisements.map((advertisement: AdvertisementDB) => {
-        return {...advertisement, id: advertisement.id.id.toString()};
+        return {...advertisement,
+            id: advertisement.id.id.toString(),
+            createdAt: advertisement.createdAt.toDate(),
+            updatedAt: advertisement.updatedAt.toDate(),
+        };
     })
 }

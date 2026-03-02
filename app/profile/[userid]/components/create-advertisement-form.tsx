@@ -163,7 +163,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                         <Input
                                             {...field}
                                             aria-invalid={fieldState.invalid}
-                                            placeholder={"Je veux aider"}
+                                            placeholder={"Toulouse"}
                                         />
                                         {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
                                     </Field>
@@ -179,7 +179,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                             <InputGroupTextarea
                                                 {...field}
                                                 aria-invalid={fieldState.invalid}
-                                                placeholder={"Propose de l'aide aux devoir..."}
+                                                placeholder={"Tous les lundi entre 23h et 23h10..."}
                                             />
                                         </InputGroup>
                                         <FieldDescription>
