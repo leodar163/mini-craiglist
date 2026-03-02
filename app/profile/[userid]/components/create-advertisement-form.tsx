@@ -4,10 +4,10 @@ import {Controller, useForm, useWatch} from "react-hook-form";
 import {valibotResolver} from "@hookform/resolvers/valibot";
 import {CreateAdvertisementData, createAdvertisementSchema} from "@/lib/validation-schemas/create-advertisement-data";
 import {
-    Advertisement,
+    Advertisement, AdvertisementCategory,
     AdvertisementModality,
     AdvertisementPricing,
-    AdvertisementType, translateAdvertisementModality, translateAdvertisementPricing,
+    AdvertisementType, translateAdvertisementCategory, translateAdvertisementModality, translateAdvertisementPricing,
     translateAdvertisementType
 } from "@/lib/types/advertisement";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
@@ -27,6 +27,17 @@ import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
 import {createAdvertisement} from "@/app/actions/advertisement.actions";
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
+import BadgeList from "@/components/ui/badge-list";
+import {
+    Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput,
+    ComboboxContent,
+    ComboboxEmpty,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxList, ComboboxValue
+} from "@/components/ui/combobox";
+import {Badge} from "@/components/ui/badge";
+import {TrashIcon} from "lucide-react";
 
 export interface CreateAdvertisementFormProps {
     afterSubmission?: (advertisement: Advertisement) => void;
@@ -77,14 +88,14 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
+            <DialogTrigger render={
                 <Button>créer une annonce</Button>
-            </DialogTrigger>
+            }/>
             <form
                 id={"create-advertisement-form"}
                 onSubmit={form.handleSubmit(onSubmit)}
             >
-                <DialogContent className={"h-9/10"}>
+                <DialogContent className={"h-9/10 sm:max-w-132"}>
                     <DialogHeader>
                         <DialogTitle>Créer une annonce</DialogTitle>
                     </DialogHeader>
@@ -137,6 +148,53 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                     </Field>
                                 }
                             />
+                            <Controller
+                                name={"categories"}
+                                control={form.control}
+                                render={({field, fieldState}) => (
+                                    <Field aria-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor={field.name}>Catégories</FieldLabel>
+                                        <Combobox
+                                            multiple
+                                            items={Object.values(AdvertisementCategory)
+                                                .filter(cate => !field.value.includes(cate))
+                                            }
+                                            value={field.value}
+                                            onValueChange={field.onChange
+                                            }
+                                        >
+                                            <ComboboxChips>
+                                                <ComboboxValue>
+                                                    {field.value.map(item => (
+                                                        <ComboboxChip key={item}>
+                                                            {translateAdvertisementCategory(item)}
+                                                        </ComboboxChip>
+                                                    ))}
+                                                </ComboboxValue>
+                                                <ComboboxChipsInput
+                                                    aria-invalid={fieldState.invalid}
+                                                    placeholder={"selectionner une catégorie"}
+                                                />
+                                            </ComboboxChips>
+                                            <ComboboxContent className="z-9999">
+                                                <ComboboxEmpty>
+                                                    Aucune catégorie restante
+                                                </ComboboxEmpty>
+                                                <ComboboxList>
+                                                    {(item: AdvertisementCategory) => (
+                                                        <ComboboxItem key={item} value={item}>
+                                                            {translateAdvertisementCategory(item)}
+                                                        </ComboboxItem>
+                                                    )}
+                                                </ComboboxList>
+                                            </ComboboxContent>
+                                        </Combobox>
+                                        {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
+                                    </Field>
+                                )}
+                            >
+
+                            </Controller>
                             <Controller
                                 name={"description"}
                                 control={form.control}
@@ -283,9 +341,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                             {validating && <Spinner data-icon="inline-start"/>}
                             créer
                         </Button>
-                        <DialogClose asChild>
-                            <Button variant={"outline"}>annuler</Button>
-                        </DialogClose>
+                        <DialogClose render={<Button variant={"outline"}>annuler</Button>}/>
                         {globalError && <FieldError errors={[globalError]}/>}
                     </CardFooter>
                 </DialogContent>
