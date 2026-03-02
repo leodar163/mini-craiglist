@@ -113,34 +113,39 @@ export async function getAdvertisementsByUser(userId: string): ServerActionRespo
         return session;
     }
 
-    const db = await getDB();
-
     const allowedStatus = userId === session.value.user.id
         ? [AdvertisementStatus.PUBLISHED, AdvertisementStatus.DRAFT]
         : [AdvertisementStatus.PUBLISHED];
 
     const userRecordId = new RecordId(DBTables.user, userId);
 
+    const db = await getDB();
+
+    const query = surql`
+        SELECT array::flatten(->wrote_ad->advertisement[
+        WHERE status INSIDE ${allowedStatus}
+    ].* ) AS ads
+        FROM ${userRecordId};
+    `;
+
     try {
-        const [adResults] = await db.query<[AdvertisementDB[]]>(
-            surql`SELECT VALUE ->wrote_ad->advertisement.*
-                  FROM ${userRecordId}
-                  WHERE ->wrote_ad->advertisement.status INSIDE [${allowedStatus}];`
+        //Le type de retour de la query est PARTICULIEREMENT difficile à cerner...
+        const [[adResults]] = await db.query<[{ ads: AdvertisementDB[] }[]]>(
+            query
         ).collect();
+        await db.close();
+
 
         return {
             success: true,
-            value: convertAdvertisementDB(...adResults)
+            value: convertAdvertisementDB(...adResults.ads)
         };
-    }
-    catch (error) {
-        console.log(error);
+    } catch (error) {
         return {
             success: false,
             error: error instanceof Error ? new Error(error.message) : new Error("Unknown DB error")
         };
-    }
-    finally {
+    } finally {
         db.close()
     }
 
