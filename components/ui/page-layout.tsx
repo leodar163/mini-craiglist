@@ -8,7 +8,7 @@ export interface PageLayoutProps {
 
 export default function PageLayout({titre, children}: PageLayoutProps) {
     return (
-        <div className={"flex flex-row h-dvh w-full"}>
+        <div className={"flex flex-row h-full w-full"}>
             <div className={"flex-1"}>
             </div>
             <div className={"flex-4 flex flex-col"}>

@@ -7,6 +7,8 @@ import {DateTime, eq, RecordId} from "surrealdb";
 import {CreateUser, UserDB} from "@/lib/types/user";
 import {convertSessionFromDB, Session, SessionDB} from "@/lib/types/session";
 import {ServerActionResponse} from "@/lib/types/actions";
+import {refresh} from "next/cache";
+import {redirect} from "next/navigation";
 
 export async function register(newUser: CreateUser): ServerActionResponse<undefined> {
     const db = await getDB();
@@ -104,6 +106,8 @@ export async function logout() {
     cookieStore.delete("session");
 
     db.close();
+
+    redirect("/login");
 }
 
 export async function getSession(): ServerActionResponse<Session> {

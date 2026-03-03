@@ -9,6 +9,11 @@ export default async function proxy(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
+    if (request.nextUrl.pathname === "/") {
+        const url = new URL(`/profile/${session.value.user.id}`, request.nextUrl);
+        return NextResponse.redirect(url);
+    }
+
     return NextResponse.next();
 }
 

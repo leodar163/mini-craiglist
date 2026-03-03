@@ -1,5 +1,5 @@
 import {getUser} from "@/app/actions/user.actions";
-import Profile from "@/app/profile/[userid]/components/profile";
+import Profile from "@/app/(home)/profile/[userid]/components/profile";
 import {getAdvertisementsByUser} from "@/app/actions/advertisement.actions";
 import {Advertisement} from "@/lib/types/advertisement";
 
