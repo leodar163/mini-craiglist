@@ -10,8 +10,9 @@ import {
 import {ServerActionResponse} from "@/lib/types/actions";
 import {DBTables, getDB} from "@/lib/db/surrealdb";
 import {getSession} from "@/app/actions/auth.actions";
-import {RecordId, surql} from "surrealdb";
+import {eq, RecordId, surql} from "surrealdb";
 import {RelationDB} from "@/lib/types/relations";
+import {convertUserFromDB, User, UserDB} from "@/lib/types/user";
 
 export async function createAdvertisement(create: CreateAdvertisement): ServerActionResponse<Advertisement> {
     const session = await getSession();
@@ -107,6 +108,60 @@ export async function deleteAdvertisement(id: string): ServerActionResponse<unde
     }
 }
 
+export async function restoreAdvertisement(id: string): ServerActionResponse<undefined> {
+    const session = await getSession();
+    if (!session.success) {
+        return session;
+    }
+
+    const db = await getDB();
+
+    const adResult = await db.update<AdvertisementDB>(new RecordId(DBTables.advertisement, id)).content({
+        status: AdvertisementStatus.DRAFT,
+    });
+
+    if (!adResult) {
+        return {
+            success: false,
+            error: new Error(`Impossible to delete advertisement ${id}`)
+        };
+    }
+
+    db.close();
+
+    return {
+        success: true,
+        value: undefined
+    }
+}
+
+export async function publishAdvertisement(id: string): ServerActionResponse<undefined> {
+    const session = await getSession();
+    if (!session.success) {
+        return session;
+    }
+
+    const db = await getDB();
+
+    const adResult = await db.update<AdvertisementDB>(new RecordId(DBTables.advertisement, id)).content({
+        status: AdvertisementStatus.PUBLISHED,
+    });
+
+    if (!adResult) {
+        return {
+            success: false,
+            error: new Error(`Impossible to delete advertisement ${id}`)
+        };
+    }
+
+    db.close();
+
+    return {
+        success: true,
+        value: undefined
+    }
+}
+
 export async function getAdvertisementsByUser(userId: string): ServerActionResponse<Advertisement[]> {
     const session = await getSession();
     if (!session.success) {
@@ -151,4 +206,64 @@ export async function getAdvertisementsByUser(userId: string): ServerActionRespo
         db.close()
     }
 
+}
+
+export async function getAdvertisement(adId: string): ServerActionResponse<Advertisement> {
+    const session = await getSession();
+    if (!session.success) {
+        return session;
+    }
+
+    const db = await getDB();
+    const result = await db.select<AdvertisementDB>(new RecordId(DBTables.advertisement, adId));
+    db.close();
+
+    if (!result) {
+        return {
+            success: false,
+            error: new Error(`Impossible to find advertisement with id "${adId}"`)
+        };
+    }
+
+    return {
+        success: true,
+        value: convertAdvertisementDB(result)[0]
+    };
+}
+
+export async function getAdvertisementsAuthor(adId: string): ServerActionResponse<User> {
+    const session = await getSession();
+    if (!session.success) {
+        return session;
+    }
+
+    let db = await getDB();
+    const [result] = await db.select<RelationDB>(
+        DBTables.wroteAd).where(eq("out", new RecordId(DBTables.advertisement, adId))
+    );
+    db.close();
+
+    if (!result) {
+        return {
+            success: false,
+            error: new Error(`Impossible to get author of advertisement with id "${adId}"`)
+        };
+    }
+
+
+    db = await getDB();
+    const userResult = await db.select<UserDB>(new RecordId(DBTables.user, result.in.id));
+    db.close();
+
+    if (!userResult) {
+        return {
+            success: false,
+            error: new Error(`Impossible to get author of advertisement with id "${adId}"`)
+        };
+    }
+
+    return {
+        success: true,
+        value: convertUserFromDB(userResult)[0]
+    };
 }
