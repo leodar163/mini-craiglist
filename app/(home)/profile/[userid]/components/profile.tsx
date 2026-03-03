@@ -4,26 +4,31 @@ import {UpdateUser, User} from "@/lib/types/user";
 import {Field, FieldGroup, FieldLabel, FieldTitle} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Advertisement} from "@/lib/types/advertisement";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import AdvertisementCard from "@/app/(home)/profile/[userid]/components/advertisement-card";
 import CreateAdvertisementForm from "@/app/(home)/profile/[userid]/components/create-advertisement-form";
 import PageLayout from "@/components/ui/page-layout";
 import {updateUser} from "@/app/actions/user.actions";
 import {InputGroup, InputGroupTextarea} from "@/components/ui/input-group";
+import {Session} from "@/lib/types/session";
 
 
 export interface ProfileProps {
+    session: Session;
     user: User | null;
     advertisements: Advertisement[];
 }
 
-export default function Profile({user, advertisements}: ProfileProps) {
+export default function Profile({session, user, advertisements}: ProfileProps) {
     const [localeAdvertisements, setLocaleAdvertisements] = useState(advertisements);
     const [localUser, setLocalUser] = useState<User | null>(user);
     const [oldUser, setOldUser] = useState<User | null>(localUser);
+    const sessionIsUser = useMemo<boolean>(() => localUser?.id == session.user.id, [localUser, session]);
 
     async function onUpdateUser(update: UpdateUser) {
         if (localUser == null) return;
+
+        console.log(update);
 
         const result = await updateUser(localUser.id, update);
 
@@ -49,6 +54,7 @@ export default function Profile({user, advertisements}: ProfileProps) {
                     <Field>
                         <FieldLabel>Ville</FieldLabel>
                         <Input
+                            disabled={!sessionIsUser}
                             value={localUser.town}
                             onChange={event => setLocalUser({...localUser, town: event.target.value})}
                             onValidate={value => onUpdateUser({town: value})}
@@ -59,6 +65,7 @@ export default function Profile({user, advertisements}: ProfileProps) {
                         <FieldLabel>Bio</FieldLabel>
                         <InputGroup>
                             <InputGroupTextarea
+                                disabled={!sessionIsUser}
                                 value={localUser.bio}
                                 onChange={event => setLocalUser({...localUser, bio: event.target.value})}
                                 onValidate={value => onUpdateUser({bio: value})}
@@ -70,11 +77,13 @@ export default function Profile({user, advertisements}: ProfileProps) {
                 <FieldGroup>
                     <FieldTitle>
                         <div className={"text-lg"}>Annonces</div>
-                        <div>
-                            <CreateAdvertisementForm
-                                afterSubmission={ad => setLocaleAdvertisements(old => [...old, ad])}
-                            />
-                        </div>
+                        {sessionIsUser &&
+                            <div>
+                                <CreateAdvertisementForm
+                                    afterSubmission={ad => setLocaleAdvertisements(old => [...old, ad])}
+                                />
+                            </div>
+                        }
                     </FieldTitle>
                     <div className={"flex flex-wrap gap-4"}>
                         {localeAdvertisements.length > 0
@@ -84,7 +93,6 @@ export default function Profile({user, advertisements}: ProfileProps) {
                             : "Aucune annonce"
                         }
                     </div>
-
                 </FieldGroup>
             </div>
         </PageLayout>

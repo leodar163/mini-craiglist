@@ -7,7 +7,8 @@ import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Textarea} from "@/components/ui/textarea"
-import {useRef} from "react";
+import {useRef, useState} from "react";
+import {value} from "valibot";
 
 function InputGroup({className, ...props}: React.ComponentProps<"div">) {
     return (
@@ -142,9 +143,10 @@ function InputGroupInput(
         onBlur,
         onKeyDown,
         onChange,
+        value,
         ...props
     }: InputGroupTextInputProps) {
-    const [value, setValue] = React.useState('');
+    const [localValue, setlocalValue] = useState(value?.toString() ?? '');
     const ref = useRef<HTMLInputElement>(null);
     const blurCause = useRef<"escape" | "enter">(null);
 
@@ -164,7 +166,7 @@ function InputGroupInput(
         if (blurCause.current === "escape") {
             onCancel?.();
         } else {
-            onValidate?.(value);
+            onValidate?.(localValue);
         }
 
         blurCause.current = null;
@@ -173,12 +175,13 @@ function InputGroupInput(
     }
 
     function handleOnChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setValue(event.target.value);
+        setlocalValue(event.target.value);
         onChange?.(event);
     }
 
     return (
         <Input
+            value={localValue}
             data-slot="input-group-control"
             className={cn(
                 "flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
@@ -204,11 +207,12 @@ function InputGroupTextarea(
         onCancel,
         onBlur,
         onKeyDown,
+        value,
         onChange,
         ...props
     }: InputGroupTextareaProps) {
 
-    const [value, setValue] = React.useState('');
+    const [localValue, setLocalValue] = useState(value?.toString() ?? '');
     const ref = useRef<HTMLTextAreaElement>(null);
     const blurCause = useRef<"escape" | "enter">(null);
 
@@ -228,7 +232,7 @@ function InputGroupTextarea(
         if (blurCause.current === "escape") {
             onCancel?.();
         } else {
-            onValidate?.(value);
+            onValidate?.(localValue);
         }
 
         blurCause.current = null;
@@ -237,12 +241,13 @@ function InputGroupTextarea(
     }
 
     function handleOnChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-        setValue(event.target.value);
+        setLocalValue(event.target.value);
         onChange?.(event);
     }
 
     return (
         <Textarea
+            value={localValue}
             data-slot="input-group-control"
             className={cn(
                 "flex-1 resize-none rounded-none border-0 bg-transparent py-3 shadow-none focus-visible:ring-0 dark:bg-transparent",

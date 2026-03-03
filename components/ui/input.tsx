@@ -3,15 +3,15 @@
 import * as React from "react"
 
 import {cn} from "@/lib/utils"
-import {useRef} from "react";
+import {useRef, useState} from "react";
 
 export interface InputProps extends React.ComponentProps<"input"> {
     onValidate?:  (value: string) => void;
     onCancel?: () => void;
 }
 
-function Input({onValidate, onCancel, onBlur, className, onChange, onKeyDown, type, ...props}: InputProps) {
-    const [value, setValue] = React.useState('');
+function Input({onValidate, onCancel, onBlur, className, onChange, onKeyDown, type, value, ...props}: InputProps) {
+    const [localValue, setLocalValue] = useState(value?.toString() ?? '');
     const ref = useRef<HTMLInputElement>(null);
     const blurCause = useRef<"escape" | "enter">(null);
 
@@ -32,7 +32,7 @@ function Input({onValidate, onCancel, onBlur, className, onChange, onKeyDown, ty
             onCancel?.();
         }
         else {
-            onValidate?.(value);
+            onValidate?.(localValue);
         }
 
         blurCause.current = null;
@@ -41,12 +41,13 @@ function Input({onValidate, onCancel, onBlur, className, onChange, onKeyDown, ty
     }
 
     function handleOnChange(event : React.ChangeEvent<HTMLInputElement>) {
-        setValue(event.target.value);
+        setLocalValue(event.target.value);
         onChange?.(event);
     }
 
     return (
         <input
+            value={localValue}
             ref={ref}
             type={type}
             data-slot="input"
