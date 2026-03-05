@@ -9,7 +9,7 @@ import {
 import {useMemo, useState} from "react";
 import {Session} from "@/lib/types/session";
 import {User} from "@/lib/types/user";
-import {Field, FieldError, FieldGroup, FieldLabel, FieldTitle} from "@/components/ui/field";
+import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {
@@ -18,9 +18,11 @@ import {
     restoreAdvertisement,
 } from "@/app/actions/advertisement.actions";
 import {Spinner} from "@/components/ui/spinner";
-import {Item, ItemContent, ItemTitle} from "@/components/ui/item";
+import {Item, ItemContent} from "@/components/ui/item";
 import {MapPinIcon} from "lucide-react";
 import PageLayout from "@/components/ui/page-layout";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import UpdateAdvertisementForm from "@/app/(home)/advertisement/[adId]/components/update-advertisement-form";
 
 export interface AdvertisementDetailProps {
     advertisement: Advertisement;
@@ -78,7 +80,6 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
     return (
         <PageLayout>
             <div className={"flex flex-col mb-16 w-124"}>
-
                 <div className={"text-xl text-foreground/30"}>Annonce</div>
                 <FieldGroup>
                     <Field orientation={"horizontal"} className={"gap-4"}>
@@ -99,6 +100,21 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                                 {translateAdvertisementStatus(localAdvertisement.status)}
                             </Badge>
                         }
+                        {
+                            sessionIsAuthor && <Tooltip>
+                                <TooltipTrigger>
+                                    <UpdateAdvertisementForm
+                                        advertisement={localAdvertisement}
+                                        afterSubmission={setLocalAdvertisement}
+                                    />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Modifier
+                                </TooltipContent>
+                            </Tooltip>
+                        }
+                    </Field>
+                    <Field orientation={"horizontal"} className={"gap-4"}>
                         {
                             sessionIsAuthor && advertisement.status === AdvertisementStatus.DRAFT &&
                             <div className={"flex flex-col"}>
@@ -143,10 +159,10 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                         {translateAdvertisementType(localAdvertisement.type)}
                     </Field>
                     <Field>
+                        <FieldLabel>Catégories</FieldLabel>
                         <Item variant={"outline"}>
                             <ItemContent>
-                                <ItemTitle>catégories</ItemTitle>
-                                <div className={"flex flex-wrap"}>
+                                <div className={"flex flex-wrap gap-3"}>
                                     {localAdvertisement.categories.map((category, index) => (
                                         <Badge key={index}
                                                variant={"secondary"}>
@@ -161,7 +177,8 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                         <FieldLabel>Lieu</FieldLabel>
                         <div className={"flex flex-row gap-2"}>
                             <MapPinIcon className={"w-6 h-6"}/>
-                            {localAdvertisement.town}<span className={"text-foreground/50"}> - {translateAdvertisementModality(localAdvertisement.modality)}</span>
+                            {localAdvertisement.town}<span
+                            className={"text-foreground/50"}> - {translateAdvertisementModality(localAdvertisement.modality)}</span>
                         </div>
                     </Field>
                     <Field>

@@ -14,7 +14,7 @@ export default function PageLayout({titre, children}: PageLayoutProps) {
             <div className={"flex-4 flex flex-col"}>
                 <ScrollArea className={"overflow-y-hidden pt-4 max-h-full pr-3"}>
                     {titre &&
-                        <div className={"text-2xl mb-4 "}>
+                        <div className={"text-xl text-foreground/30"}>
                             {titre}
                         </div>
                     }

@@ -1,7 +1,6 @@
-'use client';
+'use client'
 
 import {useState} from "react";
-import {useRouter} from "next/navigation";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import {valibotResolver} from "@hookform/resolvers/valibot";
 import {CreateAdvertisementData, createAdvertisementSchema} from "@/lib/validation-schemas/create-advertisement-data";
@@ -12,7 +11,7 @@ import {
     AdvertisementType, translateAdvertisementCategory, translateAdvertisementModality, translateAdvertisementPricing,
     translateAdvertisementType
 } from "@/lib/types/advertisement";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {CardFooter} from "@/components/ui/card";
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {InputGroup, InputGroupAddon, InputGroupInput, InputGroupTextarea} from "@/components/ui/input-group";
@@ -27,41 +26,39 @@ import {
 } from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
-import {createAdvertisement} from "@/app/actions/advertisement.actions";
+import { updateAdvertisement} from "@/app/actions/advertisement.actions";
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
-import BadgeList from "@/components/ui/badge-list";
+
 import {
     Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput,
     ComboboxContent,
     ComboboxEmpty,
-    ComboboxInput,
     ComboboxItem,
     ComboboxList, ComboboxValue
 } from "@/components/ui/combobox";
-import {Badge} from "@/components/ui/badge";
-import {TrashIcon} from "lucide-react";
+import {EditIcon} from "lucide-react";
 
-export interface CreateAdvertisementFormProps {
+export interface UpdateAdvertisementFormProps {
+    advertisement: Advertisement;
     afterSubmission?: (advertisement: Advertisement) => void;
 }
 
-export default function CreateAdvertisementForm({afterSubmission}: CreateAdvertisementFormProps) {
+export default function UpdateAdvertisementForm({afterSubmission, advertisement}: UpdateAdvertisementFormProps) {
     const [validating, setValidating] = useState(false);
     const [globalError, setGlobalError] = useState<Error | null>(null);
     const [open, setOpen] = useState<boolean>(false);
-
     const form = useForm({
         resolver: valibotResolver(createAdvertisementSchema),
         defaultValues: {
-            title: "",
-            description: "",
-            type: AdvertisementType.OFFER,
-            town: "",
-            availability: "",
-            pricing: AdvertisementPricing.FREE,
-            price: 0,
-            modality: AdvertisementModality.AT_CUSTOMER,
-            categories: []
+            title: advertisement.title,
+            description: advertisement.description,
+            type: advertisement.type,
+            town: advertisement.town,
+            availability: advertisement.availability,
+            pricing: advertisement.pricing,
+            price: advertisement.price,
+            modality: advertisement.modality,
+            categories: advertisement.categories,
         },
     });
 
@@ -74,7 +71,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
         setValidating(true);
         setGlobalError(null);
 
-        const advertisementResult = await createAdvertisement({...data});
+        const advertisementResult = await updateAdvertisement(advertisement.id, {...data});
 
         if (!advertisementResult.success) {
             setGlobalError(advertisementResult.error);
@@ -90,7 +87,9 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={
-                <Button variant={"secondary"}>créer une annonce</Button>
+                <Button variant={"ghost"}>
+                    <EditIcon/>
+                </Button>
             }/>
             <form
                 id={"create-advertisement-form"}
@@ -98,7 +97,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
             >
                 <DialogContent className={"h-9/10 sm:max-w-132"}>
                     <DialogHeader>
-                        <DialogTitle>Créer une annonce</DialogTitle>
+                        <DialogTitle>Modifer une annonce</DialogTitle>
                     </DialogHeader>
                     <div className={"no-scrollbar overflow-y-auto rounded-md"}>
                         <FieldGroup>
@@ -340,7 +339,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                     <CardFooter className={"flex flex-row gap-4 justify-start"}>
                         <Button disabled={validating} type={"submit"} form={"create-advertisement-form"}>
                             {validating && <Spinner data-icon="inline-start"/>}
-                            créer
+                            modifier
                         </Button>
                         <DialogClose render={<Button variant={"outline"}>annuler</Button>}/>
                         {globalError && <FieldError errors={[globalError]}/>}

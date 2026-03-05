@@ -48,8 +48,9 @@ export default function Profile({session, user, advertisements}: ProfileProps) {
     }
 
     return (
-        <PageLayout titre={localUser.pseudo}>
+        <PageLayout titre={"Profil"}>
             <div className={"flex flex-col gap-10 justify-center"}>
+                <div className={"text-2xl"}>{localUser.pseudo}</div>
                 <FieldGroup className={"max-w-126"}>
                     <Field>
                         <FieldLabel>Ville</FieldLabel>
