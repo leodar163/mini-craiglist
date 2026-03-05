@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {BugIcon, LogOutIcon, UserIcon} from "lucide-react";
+import {BugIcon, LogOutIcon, SearchIcon, UserIcon} from "lucide-react";
 import Link from "next/link";
 import {getSession, logout} from "@/app/actions/auth.actions";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
@@ -10,7 +10,14 @@ export default async function HomeLayout({ children }: { children: ReactNode }) 
     const user = session.success ? session.value.user : session.error;
     return <div className={"w-vh-100 h-dvh "}>
         <div className={"flex flew-row px-2 py-1 w-full h-16 rounded-b-md border"}>
-            <div className={"w-full h-full"}></div>
+            <div className={"flex flex-row justify-center items-center w-full h-full"}>
+                <Link href={"/search"}>
+                    <Button variant={"outline"} className={"w-80"}>
+                        <SearchIcon/>
+                        Chercher une annonce
+                    </Button>
+                </Link>
+            </div>
             {(user instanceof Error)  ? (
                 <Tooltip>
                     <TooltipTrigger render={<BugIcon/>}/>
