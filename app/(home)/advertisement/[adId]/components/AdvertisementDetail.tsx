@@ -114,6 +114,14 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                             </Tooltip>
                         }
                     </Field>
+                    <Field>
+                        <FieldLabel>
+                            Crée le
+                            <span className={"text-foreground/50"}>
+                                {localAdvertisement.createdAt.getDay()}/{localAdvertisement.createdAt.getMonth()}/{localAdvertisement.createdAt.getFullYear()}
+                            </span>
+                        </FieldLabel>
+                    </Field>
                     <Field orientation={"horizontal"} className={"gap-4"}>
                         {
                             sessionIsAuthor && advertisement.status === AdvertisementStatus.DRAFT &&

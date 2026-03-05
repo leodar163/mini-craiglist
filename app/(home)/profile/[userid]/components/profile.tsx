@@ -53,6 +53,14 @@ export default function Profile({session, user, advertisements}: ProfileProps) {
                 <div className={"text-2xl"}>{localUser.pseudo}</div>
                 <FieldGroup className={"max-w-126"}>
                     <Field>
+                        <FieldLabel>
+                            inscrit depuis le
+                            <span className={"text-foreground/50"}>
+                                {localUser.createdAt.getDay()}/{localUser.createdAt.getMonth()}/{localUser.createdAt.getFullYear()}
+                            </span>
+                        </FieldLabel>
+                    </Field>
+                    <Field>
                         <FieldLabel>Ville</FieldLabel>
                         <Input
                             disabled={!sessionIsUser}
