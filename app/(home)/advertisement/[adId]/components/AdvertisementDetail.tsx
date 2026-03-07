@@ -2,7 +2,7 @@
 
 import {
     Advertisement, AdvertisementPricing,
-    AdvertisementStatus,
+    AdvertisementStatus, AdvertisementType,
     translateAdvertisementCategory, translateAdvertisementModality,
     translateAdvertisementStatus, translateAdvertisementType
 } from "@/lib/types/advertisement";
@@ -23,6 +23,7 @@ import {MapPinIcon} from "lucide-react";
 import PageLayout from "@/components/ui/page-layout";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import UpdateAdvertisementForm from "@/app/(home)/advertisement/[adId]/components/update-advertisement-form";
+import Link from "next/link";
 
 export interface AdvertisementDetailProps {
     advertisement: Advertisement;
@@ -102,12 +103,14 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                         }
                         {
                             sessionIsAuthor && <Tooltip>
-                                <TooltipTrigger>
-                                    <UpdateAdvertisementForm
-                                        advertisement={localAdvertisement}
-                                        afterSubmission={setLocalAdvertisement}
-                                    />
-                                </TooltipTrigger>
+                                <TooltipTrigger
+                                    render={
+                                        <UpdateAdvertisementForm
+                                            advertisement={localAdvertisement}
+                                            afterSubmission={setLocalAdvertisement}
+                                        />
+                                    }
+                                />
                                 <TooltipContent>
                                     Modifier
                                 </TooltipContent>
@@ -120,6 +123,7 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                             <span className={"text-foreground/50"}>
                                 {localAdvertisement.createdAt.getDay()}/{localAdvertisement.createdAt.getMonth()}/{localAdvertisement.createdAt.getFullYear()}
                             </span>
+                            par <Link className={"underline hover:text-foreground/75"} href={`/profile/${author.id}`}>{author.pseudo}</Link>
                         </FieldLabel>
                     </Field>
                     <Field orientation={"horizontal"} className={"gap-4"}>
@@ -208,8 +212,13 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                     <Field>
                         <FieldLabel>Tarif</FieldLabel>
                         <div className={"text-ms"}>
-                            {translateAdvertisementType(localAdvertisement.type)}
-                            {localAdvertisement.pricing != AdvertisementPricing.FREE ? ` - ${localAdvertisement.price}€` : " - gratuit"}
+                            {(() => {switch (localAdvertisement.type) {
+                                case AdvertisementType.OFFER:
+                                    return "demande : "
+                                case AdvertisementType.REQUEST:
+                                    return "propose : "
+                            }})()}
+                            {localAdvertisement.pricing != AdvertisementPricing.FREE ? `${localAdvertisement.price}€` : "gratuit"}
                             {localAdvertisement.pricing == AdvertisementPricing.HOURLY && " par heure"}
                         </div>
                     </Field>
