@@ -53,3 +53,74 @@ DEFINE FIELD pricing ON advertisement TYPE "free" | "hourly" | "fixed";
 DEFINE FIELD price ON advertisement TYPE option<float>;
 DEFINE FIELD modality ON advertisement TYPE "remote" | "at provider" | "at customer";
 DEFINE FIELD status ON advertisement TYPE "draft" | "published" | "archived" DEFAULT "draft";
+
+--Populate table for placeholder data
+CREATE user:omar SET
+    email = "odlittle@baltmail.com",
+    pseudo = "Omar",
+    town = "Baltimore",
+    --Ilovebrandon
+    password = "$2a$12$f1Amc6fdaf7px4zVwkRZMeHMAru1jtGS0krnwhdGx0hS9b4wgYjo.",
+    bio = "Un homme doit avoir un code"
+;
+
+
+CREATE user:mcnulty SET
+    email = "jim.mcnulty@bpd.us",
+    pseudo = "McNulty",
+    town = "Baltimore",
+    --RawlsAnAsshole
+    password = "$2a$12$WD/oJInKFQzyRFJ7IBIdauvkIklmRH9uBuCfFBGjqoMyQM92fmCEi",
+    bio = "Marié à son travail"
+;
+
+CREATE user:kima SET
+    email = "shakima.greggs@baltstup.us",
+    pseudo = "Kima",
+    town = "Baltimore",
+    --Cheryl1234
+    password = "$2a$12$rXJTpr2N.LVUvCiuuQnJYO075hAJ4YGRK3oBO.F.lZDDMMo8788je",
+    bio = "Des biscotos dans les bras et dans la tête"
+;
+
+CREATE advertisement:autodef SET
+    title = "Cours d'autodéfense",
+    description = "J'apprends aux gens à se défendre par eux-mêmes en cas d'agression dans la rue ou dans des contextes plus intimes.",
+    town = "Baltimore",
+    type = "offer",
+    categories = ["care"],
+    modality = "at provider",
+    pricing = "hourly",
+    price = 10,
+    status = "published"
+;
+
+RELATE user:kima->wrote_ad->advertisement:autodef;
+
+CREATE advertisement:bras SET
+    title = "Besoin de bras",
+    description = "J'ai un souci avec une bande de débiles qui veulent pas me lâcher depuis quelques jours. J'ai besoin de quelques gros bras pour leur faire peur. Je peux payer",
+    town = "Baltimore",
+    type = "request",
+    categories = ["politics"],
+    modality = "at provider",
+    pricing = "fixed",
+    price = 120,
+    status = "published"
+;
+
+RELATE user:omar->wrote_ad->advertisment:bras;
+
+CREATE advertisement:ikea SET
+    title = "*/#*! de meuble Ikea",
+    description = "Je comprends pas ce qu'on leur trouve ces suedois avec leur foutu prix Nobel ou je sais pas quoi ! Comment des gens soi-disant \"sophistiqués\" ont pu créer des plans de construction aussi incompréhensibles ? J'ai besoin d'aide, sans quoi mes enfants vont dormir par terre et c'est mon exe qui va pas me rater...",
+    town = "Baltimore",
+    type = "request",
+    categories = ["craft"],
+    modality = "at provider",
+    pricing = "fixed",
+    price = 60,
+    status = "published"
+;
+
+RELATE user:mcnulty->wrote_ad->advertisement:ikea;
