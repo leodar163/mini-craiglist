@@ -304,6 +304,7 @@ export async function searchForAdvertisement(filters: AdvertisementSearchFilters
 
     try {
         const results = await db.select<AdvertisementDB>(DBTables.advertisement).where(and(...conditions));
+
         return {
             success: true,
             value: convertAdvertisementDB(...results),

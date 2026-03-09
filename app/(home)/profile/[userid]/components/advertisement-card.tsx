@@ -8,15 +8,17 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {MapPinIcon} from "lucide-react";
 import Link from "next/link";
+import {cn} from "@/lib/utils";
 
 export interface AdvertisementCardProps {
     advertisement: Advertisement;
+    className?: string;
 }
 
-export default function AdvertisementCard({advertisement}: AdvertisementCardProps) {
+export default function AdvertisementCard({advertisement, className}: AdvertisementCardProps) {
     return (
         <Link href={`/advertisement/${advertisement.id}`}>
-            <Card className={"w-48 h-48 hover:bg-foreground/5 cursor-pointer"}>
+            <Card className={cn("w-48 h-48 hover:bg-foreground/5 cursor-pointer", className)}>
                 <CardHeader>
                     <CardTitle className={"text-xl"}>
                         {advertisement.title}
