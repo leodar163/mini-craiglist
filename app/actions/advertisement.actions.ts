@@ -1,8 +1,8 @@
 "use server";
 
 import {
-    Advertisement,
-    AdvertisementDB, AdvertisementStatus,
+    Advertisement, AdvertisementCategory,
+    AdvertisementDB, AdvertisementPricing, AdvertisementStatus, AdvertisementType,
     convertAdvertisementDB,
     CreateAdvertisement,
     UpdateAdvertisement
@@ -10,9 +10,10 @@ import {
 import {ServerActionResponse} from "@/lib/types/actions";
 import {DBTables, getDB} from "@/lib/db/surrealdb";
 import {getSession} from "@/app/actions/auth.actions";
-import {eq, RecordId, surql} from "surrealdb";
+import {and, contains, containsAny, eq, expr, gte, inside, lte, matches, or, RecordId, surql} from "surrealdb";
 import {RelationDB} from "@/lib/types/relations";
 import {convertUserFromDB, User, UserDB} from "@/lib/types/user";
+import {filter} from "eslint-config-next";
 
 export async function createAdvertisement(create: CreateAdvertisement): ServerActionResponse<Advertisement> {
     const session = await getSession();
@@ -266,4 +267,55 @@ export async function getAdvertisementsAuthor(adId: string): ServerActionRespons
         success: true,
         value: convertUserFromDB(userResult)[0]
     };
+}
+
+export interface AdvertisementSearchFilters {
+    text: string;
+    town?: string;
+    type?: AdvertisementType;
+    categories?: AdvertisementCategory[];
+    minPrice?: number;
+    maxPrice?: number;
+    pricing?: AdvertisementPricing;
+}
+
+export async function searchForAdvertisement(filters: AdvertisementSearchFilters): ServerActionResponse<Advertisement[]> {
+    const session = await getSession();
+    if (!session.success) {
+        return session;
+    }
+
+    const db = await getDB();
+
+    const conditions = [
+        or(
+            contains("string::lowercase(title)", filters.text.toLowerCase()),
+            contains("string::lowercase(description)", filters.text.toLowerCase()),
+        )
+    ];
+
+    if (filters.town != null) conditions.push(contains("string::lowercase(town)", filters.town.toLowerCase()));
+    if (filters.type != null) conditions.push(eq("type", filters.type));
+    if (filters.categories != null) conditions.push(containsAny("categories", filters.categories));
+    if (filters.minPrice != null) conditions.push(gte("price", filters.minPrice));
+    if (filters.maxPrice != null) conditions.push(lte("price", filters.maxPrice));
+    if (filters.pricing != null) conditions.push(eq("pricing", filters.pricing));
+
+
+    try {
+        const results = await db.select<AdvertisementDB>(DBTables.advertisement).where(and(...conditions));
+        return {
+            success: true,
+            value: convertAdvertisementDB(...results),
+        };
+    }
+    catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? new Error(error.message) : new Error("Unknown DB error")
+        };
+    }
+    finally {
+        db.close();
+    }
 }
