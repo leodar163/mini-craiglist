@@ -4,7 +4,7 @@ import {AdvertisementCategory, AdvertisementPricing, AdvertisementType} from "@/
 
 export async function GET() {
 
-    const searchResult = await searchForAdvertisement({text: "", pricing: AdvertisementPricing.FIXED, maxPrice: 120, minPrice: 10});
+    const searchResult = await searchForAdvertisement({text: '', minPrice: 15});
     if (!searchResult.success) {
         return NextResponse.json(searchResult.error.message);
     }

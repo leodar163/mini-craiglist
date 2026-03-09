@@ -157,12 +157,9 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
                                         <FieldLabel htmlFor={field.name}>Catégories</FieldLabel>
                                         <Combobox
                                             multiple
-                                            items={Object.values(AdvertisementCategory)
-                                                .filter(cate => !field.value.includes(cate))
-                                            }
+                                            items={Object.values(AdvertisementCategory)}
                                             value={field.value}
-                                            onValueChange={field.onChange
-                                            }
+                                            onValueChange={field.onChange}
                                         >
                                             <ComboboxChips>
                                                 <ComboboxValue>

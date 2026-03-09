@@ -14,6 +14,9 @@ export default async function SearchPage({searchParams}: { searchParams: Promise
 
     const filters = await searchParams;
     if (filters.text == null) filters.text = "";
+    if (filters.categories != null && !Array.isArray(filters.categories)) filters.categories = [filters.categories];
+    if (filters.minPrice != null && typeof filters.minPrice === "string") filters.minPrice = Number(filters.minPrice);
+    if (filters.maxPrice != null && typeof filters.maxPrice === "string") filters.maxPrice = Number(filters.maxPrice);
 
     const searchResult = await searchForAdvertisement(filters);
 
