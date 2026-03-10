@@ -1,5 +1,5 @@
 import {DateTime, RecordId} from "surrealdb";
-import {convertUserFromDB, User, UserDB} from "@/lib/types/user";
+import {convertUserDB, User, UserDB} from "@/lib/types/user";
 import {WithID, WithIdDB} from "@/lib/types/common";
 
 export interface Session extends WithID {
@@ -13,7 +13,7 @@ export interface SessionDB extends WithIdDB {
 }
 
 export function convertSessionFromDB(sessions : SessionDB[], users: UserDB[]): Session[] {
-    const newUsers: User[] = convertUserFromDB(...users);
+    const newUsers: User[] = convertUserDB(...users);
     return sessions.map((session, index) => ({
         id: session.id.id.toString(),
         user: newUsers[index],

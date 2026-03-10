@@ -2,10 +2,10 @@
 
 
 import {ServerActionResponse} from "@/lib/types/actions";
-import {convertUserFromDB, UpdateUser, User, UserDB} from "@/lib/types/user";
+import {convertUserDB, UpdateUser, User, UserDB} from "@/lib/types/user";
 import {getSession} from "@/app/actions/auth.actions";
 import {DBTables, getDB} from "@/lib/db/surrealdb";
-import {RecordId} from "surrealdb";
+import {inside, RecordId, RecordIdRange} from "surrealdb";
 
 export async function getUser(userId: string): ServerActionResponse<User> {
     const session = await getSession();
@@ -26,8 +26,36 @@ export async function getUser(userId: string): ServerActionResponse<User> {
 
     return {
         success: true,
-        value: convertUserFromDB(user)[0]
+        value: convertUserDB(user)[0]
     };
+}
+
+export async function getMultipleUsers(userIds: string[]): ServerActionResponse<User[]> {
+    const session = await getSession();
+    if (!session.success) {
+        return session;
+    }
+
+    const ids = userIds.map(id => new RecordId(DBTables.user, id));
+
+    const db = await getDB();
+    try {
+        const usersResult = await db.select<UserDB>(DBTables.user).where(inside("id", ids));
+
+        return {
+            success: true,
+            value: convertUserDB(...usersResult)
+        };
+    }
+    catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? new Error(error.message) : new Error("Unknown DB error")
+        }
+    }
+    finally {
+        db.close();
+    }
 }
 
 export async function updateUser(userId: string, update: UpdateUser): ServerActionResponse<User> {
@@ -48,7 +76,7 @@ export async function updateUser(userId: string, update: UpdateUser): ServerActi
 
     return {
         success: true,
-        value: convertUserFromDB(user)[0]
+        value: convertUserDB(user)[0]
     };
 }
 

@@ -5,6 +5,8 @@ export const DBTables = {
     session: new Table("session"),
     advertisement: new Table("advertisement"),
     wroteAd: new Table("wrote_ad"),
+    discussion: new Table("discussion"),
+    message: new Table("message"),
 }
 
 export async function getDB() {

@@ -30,7 +30,7 @@ export interface UserDB extends CommonDB{
     bio: string;
 }
 
-export function convertUserFromDB(...users: UserDB[]): User[] {
+export function convertUserDB(...users: UserDB[]): User[] {
     return users.map(user => ({
         ...user,
         id: user.id.id.toString(),

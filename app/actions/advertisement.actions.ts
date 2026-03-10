@@ -12,7 +12,7 @@ import {DBTables, getDB} from "@/lib/db/surrealdb";
 import {getSession} from "@/app/actions/auth.actions";
 import {and, contains, containsAny, eq, expr, gte, inside, lte, matches, or, RecordId, surql} from "surrealdb";
 import {RelationDB} from "@/lib/types/relations";
-import {convertUserFromDB, User, UserDB} from "@/lib/types/user";
+import {convertUserDB, User, UserDB} from "@/lib/types/user";
 import {filter} from "eslint-config-next";
 
 export async function createAdvertisement(create: CreateAdvertisement): ServerActionResponse<Advertisement> {
@@ -265,7 +265,7 @@ export async function getAdvertisementsAuthor(adId: string): ServerActionRespons
 
     return {
         success: true,
-        value: convertUserFromDB(userResult)[0]
+        value: convertUserDB(userResult)[0]
     };
 }
 
