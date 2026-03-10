@@ -8,8 +8,8 @@ import {Button} from "@/components/ui/button";
 export default async function HomeLayout({ children }: { children: ReactNode }) {
     const session = await getSession();
     const user = session.success ? session.value.user : session.error;
-    return <div className={"w-vh-100 h-dvh "}>
-        <div className={"flex flew-row px-2 py-1 w-full h-16 rounded-b-md border"}>
+    return <div className={"w-full h-dvh flex flex-col"}>
+        <div className={"flex flew-row px-2 py-1 w-full h-16 rounded-b-md border "}>
             <div className={"flex flex-row justify-center items-center w-full h-full"}>
                 <Link href={"/search"}>
                     <Button variant={"outline"} className={"w-80"}>

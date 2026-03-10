@@ -11,14 +11,16 @@ export default function PageLayout({title, children}: PageLayoutProps) {
         <div className={"flex flex-row h-full w-full"}>
             <div className={"flex-1"}>
             </div>
-            <div className={"flex-4 flex flex-col"}>
-                <ScrollArea className={"overflow-y-hidden pt-4 max-h-full pr-3"}>
+            <div className={"flex-4 flex flex-col min-h-0"}>
+                <ScrollArea className={"overflow-y-hidden pt-4 h-dvh pr-3"}>
                     {title &&
                         <div className={"text-xl text-foreground/30"}>
                             {title}
                         </div>
                     }
-                    {children}
+                    <div className={"h-full"}>
+                        {children}
+                    </div>
                 </ScrollArea>
             </div>
             <div className={"flex-1 "}></div>
