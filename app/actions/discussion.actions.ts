@@ -97,14 +97,12 @@ export async function getDiscussionsOfUser(userId: string): ServerActionResponse
                 eq("sender", new RecordId(DBTables.user, userId))
             )).fetch("advertisement", "sender");
 
-        console.log(discussionResults);
-
         return {
             success: true,
             value: (await convertDiscussionDB(...discussionResults))
                 .sort((a,b) =>
-                    b.messages[b.messages.length - 1].createdAt.getTime() -
-                    a.messages[a.messages.length - 1].createdAt.getTime()
+                    (b.messages[b.messages.length - 1]?.createdAt.getTime() ?? 0) -
+                    (a.messages[a.messages.length - 1]?.createdAt.getTime() ?? 0)
                 )
         };
     }

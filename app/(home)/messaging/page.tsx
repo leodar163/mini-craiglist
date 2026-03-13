@@ -16,10 +16,7 @@ export default async function messagingPage({searchParams}: {searchParams: Promi
         return <>Erreur lors de la récupération des discussions</>
     }
 
-    const discussions = discussionResult.value.sort((a, b) =>
-        a.messages[a.messages.length - 1].createdAt.getTime() -
-        b.messages[b.messages.length - 1].createdAt.getTime()
-    );
+    const discussions = discussionResult.value;
 
     let {discussionId} = await searchParams;
 

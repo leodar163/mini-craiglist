@@ -31,3 +31,26 @@ export async function getDB() {
 
     return db;
 }
+
+export async function getDBWebSocket() {
+    const db = new Surreal();
+
+    try {
+        await db.connect("ws://127.0.0.1:8000/rpc", {
+            namespace: "minicraig_list",
+            database: "all",
+            authentication: {
+                username: "root",
+                password: "root",
+            }
+        });
+
+        await db.ready;
+    }
+    catch (error) {
+        console.error("❌ DB WebSocket connection error:", error);
+        await db.close();
+    }
+
+    return db;
+}

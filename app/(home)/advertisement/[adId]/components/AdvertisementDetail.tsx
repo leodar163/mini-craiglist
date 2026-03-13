@@ -84,7 +84,7 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                 <div className={"text-xl text-foreground/30"}>Annonce</div>
                 <FieldGroup>
                     <Field orientation={"horizontal"} className={"gap-4"}>
-                        <div className={"text-2xl"}>{advertisement.title}</div>
+                        <div className={"text-2xl"}>{localAdvertisement.title}</div>
                         {
                             sessionIsAuthor && <Badge variant={
                                 (() => {
