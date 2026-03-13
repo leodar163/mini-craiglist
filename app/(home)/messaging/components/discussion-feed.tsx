@@ -14,14 +14,14 @@ import {sendMessage} from "@/app/actions/discussion.actions";
 import {FieldError} from "@/components/ui/field";
 
 export interface DiscussionFeedProps {
-    discussion: Discussion;
+    discussion: Discussion | undefined;
     session: Session;
 }
 
 export function DiscussionFeed({discussion, session}: DiscussionFeedProps) {
     const [message, setMessage] = useState("");
     const [messageError, setMessageError] = useState<Error | null>(null);
-    const [messages, setMessages] = useState<Message[]>(discussion.messages);
+    const [messages, setMessages] = useState<Message[]>(discussion?.messages ?? []);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     async function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
@@ -29,7 +29,7 @@ export function DiscussionFeed({discussion, session}: DiscussionFeedProps) {
             event.preventDefault();
             setMessageError(null);
 
-            if (message !== "") {
+            if (message !== "" && discussion != null) {
                 const sendResult = await sendMessage(discussion.id, message);
                 setMessage("");
 
@@ -51,7 +51,7 @@ export function DiscussionFeed({discussion, session}: DiscussionFeedProps) {
         scrollToBottom();
     }, [messages]);
 
-    if (discussion.sender.id != session.user.id && discussion.receiver.id != session.user.id) {
+    if (discussion== null || discussion.sender.id != session.user.id && discussion.receiver.id != session.user.id) {
         return <>
             Vous n&apos;avez pas accès à cette discussion...
         </>

@@ -18,6 +18,9 @@ export default async function HomeLayout({ children }: { children: ReactNode }) 
                     </Button>
                 </Link>
             </div>
+            <div>
+                <Link href={"/messaging"}/>
+            </div>
             {(user instanceof Error)  ? (
                 <Tooltip>
                     <TooltipTrigger render={<BugIcon/>}/>
