@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import {cn} from "@/lib/utils"
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 export interface InputProps extends React.ComponentProps<"input"> {
     onValidate?:  (value: string) => void;
@@ -14,6 +14,10 @@ function Input({onValidate, onCancel, onBlur, className, onChange, onKeyDown, ty
     const [localValue, setLocalValue] = useState(value?.toString() ?? '');
     const ref = useRef<HTMLInputElement>(null);
     const blurCause = useRef<"escape" | "enter">(null);
+
+    useEffect(() => {
+        setLocalValue(value?.toString() ?? '');
+    }, [value]);
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === 'Enter') {

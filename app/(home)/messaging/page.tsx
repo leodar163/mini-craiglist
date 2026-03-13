@@ -1,7 +1,7 @@
 import {getSession} from "@/app/actions/auth.actions";
 import {getDiscussionsOfUser} from "@/app/actions/discussion.actions";
 import PageLayout from "@/components/ui/page-layout";
-import {DiscussionFeed} from "@/app/(home)/messaging/discussion-feed";
+import {DiscussionFeed} from "@/app/(home)/messaging/components/discussion-feed";
 
 export default async function messagingPage({searchParams}: {searchParams: Promise<{discussionId: string}>}) {
     const sessions = await getSession();
@@ -17,7 +17,7 @@ export default async function messagingPage({searchParams}: {searchParams: Promi
 
     return (
         <PageLayout>
-            <DiscussionFeed discussion={discussions.value[0]} />
+            <DiscussionFeed discussion={discussions.value[0]} session={sessions.value}/>
         </PageLayout>
     )
 }

@@ -7,7 +7,7 @@ import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Textarea} from "@/components/ui/textarea"
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {value} from "valibot";
 
 function InputGroup({className, ...props}: React.ComponentProps<"div">) {
@@ -146,9 +146,13 @@ function InputGroupInput(
         value,
         ...props
     }: InputGroupTextInputProps) {
-    const [localValue, setlocalValue] = useState(value?.toString() ?? '');
+    const [localValue, setLocalValue] = useState(value?.toString() ?? '');
     const ref = useRef<HTMLInputElement>(null);
     const blurCause = useRef<"escape" | "enter">(null);
+
+    useEffect(() => {
+        setLocalValue(value?.toString() ?? '');
+    }, [value]);
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === 'Enter') {
@@ -175,7 +179,7 @@ function InputGroupInput(
     }
 
     function handleOnChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setlocalValue(event.target.value);
+        setLocalValue(event.target.value);
         onChange?.(event);
     }
 
@@ -215,6 +219,10 @@ function InputGroupTextarea(
     const [localValue, setLocalValue] = useState(value?.toString() ?? '');
     const ref = useRef<HTMLTextAreaElement>(null);
     const blurCause = useRef<"escape" | "enter">(null);
+
+    useEffect(() => {
+        setLocalValue(value?.toString() ?? '');
+    }, [value]);
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
         if (event.key === 'Enter') {

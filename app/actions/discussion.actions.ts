@@ -118,3 +118,44 @@ export async function getDiscussionsOfUser(userId: string): ServerActionResponse
         db.close();
     }
 }
+
+export async function sendMessage(discussionId: string, message: string): ServerActionResponse<Message> {
+    const session = await getSession();
+    if (!session.success) {
+        return session;
+    }
+
+    if (message == "") return {
+        success: false,
+        error: new Error("Cannot send an empty message")
+    };
+
+    const db = await getDB();
+
+    try {
+        const [messageResult] = await db.create<MessageDB>(DBTables.message).content({
+            discussion: new RecordId(DBTables.discussion, discussionId),
+            text: message,
+            sender: new RecordId(DBTables.user, session.value.user.id),
+        });
+
+        if (messageResult == null) return {
+            success: false,
+            error: new Error("unknown db error")
+        };
+
+        return {
+            success: true,
+            value: convertMessageDB(messageResult)[0]
+        };
+    }
+    catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error : new Error("unknown db error")
+        };
+    }
+    finally {
+        db.close();
+    }
+}
