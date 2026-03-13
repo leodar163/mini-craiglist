@@ -4,26 +4,33 @@ import PageLayout from "@/components/ui/page-layout";
 import {DiscussionFeed} from "@/app/(home)/messaging/components/discussion-feed";
 import {DiscussionList} from "@/app/(home)/messaging/components/discussion-list";
 
-export default async function messagingPage({searchParams}: {searchParams: Promise<{discussionId: string}>}) {
+export default async function messagingPage({searchParams}: {searchParams: Promise<{discussionId: string | undefined}>}) {
     const sessions = await getSession();
     if (!sessions.success) {
         return <>Veuillez vous connecter</>
     }
 
-    const discussions = await getDiscussionsOfUser(sessions.value.user.id);
-    if (!discussions.success) {
-        console.error(discussions.error);
+    const discussionResult = await getDiscussionsOfUser(sessions.value.user.id);
+    if (!discussionResult.success) {
+        console.error(discussionResult.error);
         return <>Erreur lors de la récupération des discussions</>
     }
 
-    const {discussionId} = await searchParams;
+    const discussions = discussionResult.value.sort((a, b) =>
+        a.messages[a.messages.length - 1].createdAt.getTime() -
+        b.messages[b.messages.length - 1].createdAt.getTime()
+    );
 
-    const currentDiscussion = discussions.value.find(d => d.id === discussionId);
+    let {discussionId} = await searchParams;
+
+    if (discussionId == null) discussionId = discussions[0].id;
+
+    const currentDiscussion = discussions.find(d => d.id === discussionId);
 
     return (
         <PageLayout
         leftColumn={
-            <DiscussionList discussions={discussions.value} currentDiscussionId={discussionId}/>
+            <DiscussionList discussions={discussions} currentDiscussionId={discussionId}/>
         }>
             <DiscussionFeed discussion={currentDiscussion} session={sessions.value}/>
         </PageLayout>

@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {BugIcon, LogOutIcon, SearchIcon, UserIcon} from "lucide-react";
+import {BugIcon, LogOutIcon, Mail, SearchIcon, UserIcon} from "lucide-react";
 import Link from "next/link";
 import {getSession, logout} from "@/app/actions/auth.actions";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
@@ -18,9 +18,6 @@ export default async function HomeLayout({ children }: { children: ReactNode }) 
                     </Button>
                 </Link>
             </div>
-            <div>
-                <Link href={"/messaging"}/>
-            </div>
             {(user instanceof Error)  ? (
                 <Tooltip>
                     <TooltipTrigger render={<BugIcon/>}/>
@@ -30,6 +27,9 @@ export default async function HomeLayout({ children }: { children: ReactNode }) 
                 </Tooltip>
             ) : (
                 <div className={"flex flex-row gap-3 h-full items-center"}>
+                    <Link href={"/messaging"}>
+                        <Mail className={"w-10 h-10 p-2 bg-secondary hover:bg-foreground/10 rounded-lg"}/>
+                    </Link>
                     <Link href={`/profile/${user.id}`}>
                         <UserIcon className={"w-10 h-10 p-1 bg-secondary hover:bg-foreground/10 rounded-lg"}/>
                     </Link>
