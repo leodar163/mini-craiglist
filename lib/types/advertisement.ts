@@ -1,5 +1,6 @@
 import {RecordId} from "surrealdb";
 import {Common, CommonDB} from "@/lib/types/common";
+import {convertUserDB, User, UserDB} from "@/lib/types/user";
 
 export enum AdvertisementType {
     OFFER = "offer",
@@ -112,6 +113,7 @@ export interface Advertisement extends Common{
     price?: number;
     modality: AdvertisementModality;
     status: AdvertisementStatus;
+    author: User,
 }
 
 export interface CreateAdvertisement {
@@ -124,6 +126,7 @@ export interface CreateAdvertisement {
     pricing: AdvertisementPricing,
     price?: number;
     modality: AdvertisementModality;
+    author: User,
 }
 
 export interface UpdateAdvertisement {
@@ -149,6 +152,7 @@ export interface AdvertisementDB extends CommonDB {
     price?: number;
     modality: AdvertisementModality;
     status: AdvertisementStatus;
+    author: UserDB,
 }
 
 
@@ -158,6 +162,7 @@ export function convertAdvertisementDB(...advertisements: AdvertisementDB[]): Ad
             id: advertisement.id.id.toString(),
             createdAt: advertisement.createdAt.toDate(),
             updatedAt: advertisement.updatedAt.toDate(),
+            author: convertUserDB(advertisement.author)[0],
         };
     })
 }

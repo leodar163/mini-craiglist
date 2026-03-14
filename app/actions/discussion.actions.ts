@@ -14,6 +14,8 @@ import {DBTables, getDB} from "@/lib/db/surrealdb";
 import {eq, inside, or, RecordId} from "surrealdb";
 import {getAdvertisementsByUser} from "@/app/actions/advertisement.actions";
 
+const eagerField = ["advertisement", "advertisement.author", "sender"];
+
 export async function getDiscussion(id: string): ServerActionResponse<Discussion> {
     const session = await getSession();
     if (!session.success) {
@@ -23,9 +25,10 @@ export async function getDiscussion(id: string): ServerActionResponse<Discussion
     const db = await getDB();
 
     try {
-        const discussionResult = await db.select<DiscussionDB>(new RecordId(DBTables.discussion, id))
-            .fetch("sender", "advertisement");
-        await db.close();
+        const discussionResult = await db
+            .select<DiscussionDB>(new RecordId(DBTables.discussion, id))
+            .fetch(...eagerField);
+
         if (discussionResult == null) return {
             success: false,
             error: new Error(`No discussion with id "${id}"`)
@@ -42,7 +45,7 @@ export async function getDiscussion(id: string): ServerActionResponse<Discussion
             error: error instanceof Error ? error : new Error("unknown db error")
         }
     } finally {
-        db.close();
+        await db.close();
     }
 }
 
@@ -61,16 +64,15 @@ export async function getMessagesOfDiscussion(id: string): ServerActionResponse<
         return {
             success: true,
             value: convertMessageDB(...messageResult)
-                .sort((a,b)=> a.createdAt.getTime() - b.createdAt.getTime())
+                .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
         }
     } catch (error) {
         return {
             success: false,
             error: error instanceof Error ? error : new Error("unknown db error")
         }
-    }
-    finally {
-        db.close();
+    } finally {
+        await db.close();
     }
 }
 
@@ -82,37 +84,29 @@ export async function getDiscussionsOfUser(userId: string): ServerActionResponse
 
     const db = await getDB();
 
+    const userRecordID = new RecordId(DBTables.user, userId);
+
     try {
-        const advertisements = await getAdvertisementsByUser(userId);
-        if (!advertisements.success) {
-            return advertisements;
-        }
-
-        const adIds = advertisements.value
-            .map(ad => new RecordId(DBTables.advertisement, ad.id));
-
         const discussionResults = await db.select<DiscussionDB>(DBTables.discussion)
             .where(or(
-                inside("advertisement", adIds),
-                eq("sender", new RecordId(DBTables.user, userId))
-            )).fetch("advertisement", "sender");
+                eq("advertisement.author", userRecordID),
+                eq("sender", userRecordID)
+            )).fetch(...eagerField);
 
         return {
             success: true,
             value: (await convertDiscussionDB(...discussionResults))
-                .sort((a,b) =>
+                .sort((a, b) =>
                     (b.messages[b.messages.length - 1]?.createdAt.getTime() ?? 0) -
                     (a.messages[a.messages.length - 1]?.createdAt.getTime() ?? 0)
                 )
         };
-    }
-    catch (error) {
+    } catch (error) {
         return {
             success: false,
             error: error instanceof Error ? error : new Error("unknown db error")
         }
-    }
-    finally {
+    } finally {
         db.close();
     }
 }
@@ -146,14 +140,12 @@ export async function sendMessage(discussionId: string, message: string): Server
             success: true,
             value: convertMessageDB(messageResult)[0]
         };
-    }
-    catch (error) {
+    } catch (error) {
         return {
             success: false,
             error: error instanceof Error ? error : new Error("unknown db error")
         };
-    }
-    finally {
-        db.close();
+    } finally {
+        await db.close();
     }
 }

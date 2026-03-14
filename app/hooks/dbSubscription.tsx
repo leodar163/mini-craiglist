@@ -1,6 +1,6 @@
 import {LiveAction} from "surrealdb";
 import {useEffect} from "react";
-import {convertDiscussionDB, Discussion, DiscussionDB} from "@/lib/types/discussion";
+import {Discussion} from "@/lib/types/discussion";
 
 export type DBFallBackContext = LiveAction;
 

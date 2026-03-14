@@ -27,15 +27,18 @@ import Link from "next/link";
 
 export interface AdvertisementDetailProps {
     advertisement: Advertisement;
-    author: User;
     session: Session;
 }
 
-export default function AdvertisementDetail({advertisement, author, session}: AdvertisementDetailProps) {
+export default function AdvertisementDetail({advertisement, session}: AdvertisementDetailProps) {
     const [localAdvertisement, setLocalAdvertisement] = useState(advertisement);
     const [archiveError, setArchiveError] = useState<Error | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const sessionIsAuthor = useMemo(() => session.user.id == author.id, [session, author]);
+
+    const sessionIsAuthor = useMemo(() =>
+        session.user.id == localAdvertisement.author.id,
+        [session, localAdvertisement.author]
+    );
 
     if (!sessionIsAuthor && advertisement.status != AdvertisementStatus.PUBLISHED) {
         return <>Cette annonce n&apos;existe plus ou n&apos;est pas encore publiée et vous n&apos;en êtes pas
@@ -121,9 +124,9 @@ export default function AdvertisementDetail({advertisement, author, session}: Ad
                         <FieldLabel>
                             Crée le
                             <span className={"text-foreground/50"}>
-                                {localAdvertisement.createdAt.getDay()}/{localAdvertisement.createdAt.getMonth()}/{localAdvertisement.createdAt.getFullYear()}
+                                {localAdvertisement.createdAt.toLocaleDateString()}
                             </span>
-                            par <Link className={"underline hover:text-foreground/75"} href={`/profile/${author.id}`}>{author.pseudo}</Link>
+                            par <Link className={"underline hover:text-foreground/75"} href={`/profile/${localAdvertisement.author.id}`}>{localAdvertisement.author.pseudo}</Link>
                         </FieldLabel>
                     </Field>
                     <Field orientation={"horizontal"} className={"gap-4"}>

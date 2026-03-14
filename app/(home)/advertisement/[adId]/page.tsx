@@ -1,6 +1,6 @@
 import {getSession} from "@/app/actions/auth.actions";
-import {getAdvertisement, getAdvertisementsAuthor} from "@/app/actions/advertisement.actions";
 import AdvertisementDetail from "@/app/(home)/advertisement/[adId]/components/AdvertisementDetail";
+import {getAdvertisement} from "@/app/actions/advertisement.actions";
 
 export default async function AdvertisementPage({params}: {params: Promise<{adId: string}>}) {
     const sessionResult = await getSession();
@@ -14,17 +14,10 @@ export default async function AdvertisementPage({params}: {params: Promise<{adId
     if (!ad.success) {
         return <>Cette annonce n&apos;existe pas</>
     }
-    
-    const author = await getAdvertisementsAuthor(adId);
-    
-    if (!author.success) {
-        return <>Cette annonce n&apos;existe pas ou n&apos;a pas d&apos;auteur</>
-    }
 
     return (
       <AdvertisementDetail 
-          advertisement={ad.value} 
-          author={author.value} 
+          advertisement={ad.value}
           session={sessionResult.value}/>
     );
 }

@@ -56,7 +56,7 @@ export default function Profile({session, user, advertisements}: ProfileProps) {
                         <FieldLabel>
                             inscrit depuis le
                             <span className={"text-foreground/50"}>
-                                {localUser.createdAt.getDay()}/{localUser.createdAt.getMonth()}/{localUser.createdAt.getFullYear()}
+                                {localUser.createdAt.toLocaleDateString()}
                             </span>
                         </FieldLabel>
                     </Field>

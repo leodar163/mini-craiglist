@@ -2,7 +2,6 @@ import {Common, CommonDB} from "@/lib/types/common";
 import {convertUserDB, User, UserDB} from "@/lib/types/user";
 import {Advertisement, AdvertisementDB, convertAdvertisementDB} from "@/lib/types/advertisement";
 import {RecordId} from "surrealdb";
-import {getAdvertisementsAuthor} from "@/app/actions/advertisement.actions";
 import {getMessagesOfDiscussion} from "@/app/actions/discussion.actions";
 
 export interface Discussion extends Common {
@@ -22,10 +21,7 @@ export async function convertDiscussionDB(...discussions: DiscussionDB[]): Promi
 }
 
 async function convertDiscussionDBUnique(discussion: DiscussionDB): Promise<Discussion> {
-    const receiver = await getAdvertisementsAuthor(discussion.advertisement.id.id.toString())
-    if (!receiver.success) {
-        throw receiver.error;
-    }
+    const receiver = discussion.advertisement.author;
 
     const messages = await getMessagesOfDiscussion(discussion.id.id.toString());
     if (!messages.success) {
@@ -38,7 +34,7 @@ async function convertDiscussionDBUnique(discussion: DiscussionDB): Promise<Disc
         createdAt: discussion.createdAt.toDate(),
         updatedAt: discussion.updatedAt.toDate(),
         sender: convertUserDB(discussion.sender)[0],
-        receiver: receiver.value,
+        receiver: convertUserDB(receiver)[0],
         advertisement: convertAdvertisementDB(discussion.advertisement)[0],
         messages: messages.value,
     }

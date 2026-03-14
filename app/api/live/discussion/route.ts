@@ -1,20 +1,29 @@
 import {NextRequest} from "next/server";
 import {DBTables, getDBWebSocket} from "@/lib/db/surrealdb";
 import {getSession} from "@/app/actions/auth.actions";
-import {jsonify} from "surrealdb";
+import {eq, jsonify, or, RecordId} from "surrealdb";
 import {convertDiscussionDB, DiscussionDB} from "@/lib/types/discussion";
+
+const eagerField = ["advertisement", "advertisement.author", "sender"];
 
 export async function GET(request: NextRequest) {
     const session = await getSession();
-    if (!session.success) return new Response('Unauthorized', { status: 401 });
+    if (!session.success) return new Response('Unauthorized', {status: 401});
 
     const encoder = new TextEncoder();
+
+    const userRecordID = new RecordId(DBTables.user, session.value.user.id);
 
     const stream = new ReadableStream({
         async start(controller) {
             const db = await getDBWebSocket();
 
-            const live = await db.live(DBTables.discussion).fetch("advertisement", "sender")
+            const live = await db
+                .live(DBTables.discussion)
+                .where(or(
+                    eq("advertisement.author", userRecordID),
+                    eq("sender", userRecordID)))
+                .fetch(...eagerField);
 
             request.signal.addEventListener("abort", () => {
                 live.kill();
@@ -30,8 +39,7 @@ export async function GET(request: NextRequest) {
                     )
                     controller.enqueue(data);
                 }
-            }
-            catch (e) {
+            } catch (e) {
                 await live.kill();
                 await db.close();
                 controller.close();
