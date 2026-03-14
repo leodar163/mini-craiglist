@@ -86,41 +86,60 @@ CREATE user:kima SET
 CREATE advertisement:autodef SET
     title = "Cours d'autodéfense",
     description = "J'apprends aux gens à se défendre par eux-mêmes en cas d'agression dans la rue ou dans des contextes plus intimes.",
+    availability = "Tous les jeudi, sauf la semaine du 14 octobre",
     town = "Baltimore",
     type = "offer",
     categories = ["care"],
     modality = "at provider",
     pricing = "hourly",
     price = 10,
-    status = "published"
+    status = "published",
+    author = user:kima
 ;
-
-RELATE user:kima->wrote_ad->advertisement:autodef;
 
 CREATE advertisement:bras SET
     title = "Besoin de bras",
     description = "J'ai un souci avec une bande de débiles qui veulent pas me lâcher depuis quelques jours. J'ai besoin de quelques gros bras pour leur faire peur. Je peux payer",
+    availability = "Mardi 15h",
     town = "Baltimore",
     type = "request",
     categories = ["politics"],
     modality = "at provider",
     pricing = "fixed",
     price = 120,
-    status = "published"
+    status = "published",
+    author = user:omar
 ;
-
-RELATE user:omar->wrote_ad->advertisment:bras;
 
 CREATE advertisement:ikea SET
     title = "*/#*! de meuble Ikea",
     description = "Je comprends pas ce qu'on leur trouve ces suedois avec leur foutu prix Nobel ou je sais pas quoi ! Comment des gens soi-disant \"sophistiqués\" ont pu créer des plans de construction aussi incompréhensibles ? J'ai besoin d'aide, sans quoi mes enfants vont dormir par terre et c'est mon exe qui va pas me rater...",
+    availability = "Au plus tôt par pitié",
     town = "Baltimore",
     type = "request",
     categories = ["craft"],
     modality = "at provider",
     pricing = "fixed",
     price = 60,
-    status = "published"
+    status = "published",
+    author = user:mcnulty
 ;
 
-RELATE user:mcnulty->wrote_ad->advertisement:ikea;
+CREATE discussion:mymen SET
+    sender = user:mcnulty,
+    advertisement = advertisement:bras
+;
+
+CREATE message SET
+    sender = user:mcnulty,
+    discussion = discussion:mymen,
+    text = "Yo Omar ! J'ai besoin de thune pour emmener mes enfants au parc d'attraction. J'en suis"
+;
+
+CREATE message SET
+    sender = user:omar,
+    discussion = discussion:mymen,
+    text = "eh eh eh, McNulty's in the place!",
+    createdAt = time::now() + 60s
+;
+    

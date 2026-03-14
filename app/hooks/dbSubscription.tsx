@@ -20,8 +20,14 @@ export function useDiscussionSubscription(
         eventSource.onmessage = (event) => {
             const {action, result}: { action: DBFallBackContext, result: Discussion } = JSON.parse(event.data);
 
+            const discussion = {
+                ...result,
+                createdAt: new Date(result.createdAt),
+                updatedAt: new Date(result.updatedAt),
+            }
+
             if (context.includes(action)) {
-                fallback(result);
+                fallback(discussion);
             }
         }
 
@@ -48,8 +54,14 @@ export function useMessageSubscription(
         eventSource.onmessage = (event) => {
             const {action, result} : { action: DBFallBackContext, result: Message } = JSON.parse(event.data);
 
+            const message = {
+                ...result,
+                createdAt: new Date(result.createdAt),
+                updatedAt: new Date(result.updatedAt),
+            }
+
             if (context.includes(action)) {
-                fallback(result);
+                fallback(message);
             }
         }
         return () => eventSource.close();

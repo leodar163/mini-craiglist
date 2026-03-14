@@ -23,13 +23,7 @@ export async function GET(
 
             const live = await db
                 .live(DBTables.message)
-                .where(and(
-                    eq("discussion", discussionId),
-                    or(
-                        eq("sender", userId),
-                        eq("discussion.author", userId)
-                    )
-                ));
+                .where(eq("discussion", discussionId));
 
             request.signal.addEventListener("abort", () => {
                 live.kill();
@@ -40,10 +34,10 @@ export async function GET(
                 for await (const update of live) {
                     const message = convertMessageDB(update.value as unknown as MessageDB)[0];
 
-                    const data = encoder.encode(`data: ${JSON.stringify(jsonify({
+                    const data = encoder.encode(`data: ${JSON.stringify({
                         action: update.action,
                         result: message,
-                    }))}`);
+                    })}\n\n`);
                     controller.enqueue(data);
                 }
             } catch (error) {

@@ -9,9 +9,10 @@ import {InputGroup, InputGroupTextarea} from "@/components/ui/input-group";
 import {Card} from "@/components/ui/card";
 import Link from "next/link";
 import {Session} from "@/lib/types/session";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {sendMessage} from "@/app/actions/discussion.actions";
 import {FieldError} from "@/components/ui/field";
+import {useMessageSubscription} from "@/app/hooks/dbSubscription";
 
 export interface DiscussionFeedProps {
     discussion: Discussion | undefined;
@@ -37,7 +38,7 @@ export function DiscussionFeed({discussion, session}: DiscussionFeedProps) {
                     setMessageError(sendResult.error);
                     return;
                 }
-                setMessages(old => [...old, sendResult.value]);
+                addMessage(sendResult.value);
             }
         }
     }
@@ -47,11 +48,18 @@ export function DiscussionFeed({discussion, session}: DiscussionFeedProps) {
         if (viewPort) viewPort.scrollTop = viewPort.scrollHeight;
     }
 
+    const addMessage = useCallback((message: Message) => {
+        if (messages.find(m => m.id == message.id)) return;
+        setMessages(old => [...old, message]);
+    }, [messages]);
+
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    if (discussion== null || discussion.sender.id != session.user.id && discussion.receiver.id != session.user.id) {
+    useMessageSubscription('CREATE', discussion?.id, addMessage);
+
+    if (discussion == null || discussion.sender.id != session.user.id && discussion.receiver.id != session.user.id) {
         return <>
             Vous n&apos;avez pas accès à cette discussion...
         </>
@@ -60,7 +68,8 @@ export function DiscussionFeed({discussion, session}: DiscussionFeedProps) {
     return (
         <div className={"flex flex-col gap-3 h-full"} onKeyDown={onKeyDown}>
             <AdvertisementCard className={"h-40 w-full"} advertisement={discussion.advertisement}/>
-            <div className={"w-full flex flex-row gap-6 py-4 justify-between"}>
+            <div
+                className={`w-full flex flex-row gap-6 py-4 justify-between ${discussion.receiver.id != session.user.id ? "flex-row-reverse" : ""}`}>
                 <Link className={"hover:underline hover:cursor-pointer"}
                       href={`/profile/${discussion.sender.id}`}>
                     <div className={"flex flex-row gap-2"}>

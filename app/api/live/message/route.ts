@@ -17,11 +17,7 @@ export async function GET(request: NextRequest) {
             const db = await getDBWebSocket();
 
             const live = await db
-                .live(DBTables.message)
-                .where(or(
-                    eq("sender", userId),
-                    eq("discussion.author", userId)
-                ));
+                .live(DBTables.message);
 
             request.signal.addEventListener("abort", () => {
                 live.kill();
@@ -32,10 +28,10 @@ export async function GET(request: NextRequest) {
                 for await (const update of live) {
                     const message = convertMessageDB(update.value as unknown as MessageDB)[0];
 
-                    const data = encoder.encode(`data: ${JSON.stringify(jsonify({
+                    const data = encoder.encode(`data: ${JSON.stringify({
                         action: update.action,
                         result: message,
-                    }))}`);
+                    })}\n\n`);
                     controller.enqueue(data);
                 }
             } catch (error) {
