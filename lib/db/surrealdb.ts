@@ -4,7 +4,6 @@ export const DBTables = {
     user: new Table("user"),
     session: new Table("session"),
     advertisement: new Table("advertisement"),
-    wroteAd: new Table("wrote_ad"),
     discussion: new Table("discussion"),
     message: new Table("message"),
 }
