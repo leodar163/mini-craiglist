@@ -1,7 +1,3 @@
-surreal sql --conn http://127.0.0.1:8000 \
-            --user root \
-            --pass root
-
 --Define namepasace and database
 DEFINE NAMESPACE minicraig_list;
 USE NAMESPACE minicraig_list;
@@ -54,7 +50,7 @@ DEFINE FIELD price ON advertisement TYPE option<float>;
 DEFINE FIELD modality ON advertisement TYPE "remote" | "at provider" | "at customer";
 DEFINE FIELD status ON advertisement TYPE "draft" | "published" | "archived" DEFAULT "draft";
 
---Define discussion and message tables
+-- Define discussion and message tables
 DEFINE TABLE discussion SCHEMAFULL;
 
 DEFINE FIELD createdAt ON discussion TYPE datetime DEFAULT time::now();
@@ -71,7 +67,7 @@ DEFINE FIELD sender ON message TYPE record<user>;
 DEFINE FIELD discussion ON message TYPE record<discussion>;
 DEFINE FIELD text ON message TYPE string;
 
---Populate table for placeholder data
+-- Populate table for placeholder data
 CREATE user:omar SET
     email = "odlittle@baltmail.com",
     pseudo = "Omar",

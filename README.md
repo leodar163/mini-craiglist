@@ -13,8 +13,24 @@
 
 À noter que la mémoire de la db n'est pas persistante et se vide entre chaque lancement. C'est volontaire.
 
+## Définir et peupler la base de données
+Une fois que la bdd est lancée, dans un autre terminal, lancer la commande suivante
+``` bash
+Get-Content SQL/init.surql -Raw | surreal sql `
+    --endpoint http://127.0.0.1:8000 `
+    --username root `
+    --password root `
+    --namespace minicraig_list `
+    --database all `
+    --multi
+```
+
 ## Lancer Next
+Une fois la bdd lancée, définie et peuplée, dans un autre terminal, lancer
 ```bash
 npm run dev
 ```
 Vous pouvez ensuite vous rendre sur http://localhost:3000 pour tester l'application
+
+## Authentification
+Vous pouvez créer votre propre profil ou vous connecter avec un des profils placeholder dont vous pouvez trouver les identifiants dans ```SQL/init.surql```.
