@@ -54,6 +54,23 @@ DEFINE FIELD price ON advertisement TYPE option<float>;
 DEFINE FIELD modality ON advertisement TYPE "remote" | "at provider" | "at customer";
 DEFINE FIELD status ON advertisement TYPE "draft" | "published" | "archived" DEFAULT "draft";
 
+--Define discussion and message tables
+DEFINE TABLE discussion SCHEMAFULL;
+
+DEFINE FIELD createdAt ON discussion TYPE datetime DEFAULT time::now();
+DEFINE FIELD updatedAt ON discussion TYPE datetime VALUE time::now();
+DEFINE FIELD sender ON discussion TYPE record<user>;
+DEFINE FIELD advertisement ON discussion TYPE record<advertisement>;
+DEFINE FIELD author ON advertisement TYPE record<user>;
+
+DEFINE TABLE message SCHEMAFULL;
+
+DEFINE FIELD createdAt ON message TYPE datetime DEFAULT time::now();
+DEFINE FIELD updatedAt ON message TYPE datetime VALUE time::now();
+DEFINE FIELD sender ON message TYPE record<user>;
+DEFINE FIELD discussion ON message TYPE record<discussion>;
+DEFINE FIELD text ON message TYPE string;
+
 --Populate table for placeholder data
 CREATE user:omar SET
     email = "odlittle@baltmail.com",

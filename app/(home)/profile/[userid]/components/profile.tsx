@@ -89,6 +89,7 @@ export default function Profile({session, user, advertisements}: ProfileProps) {
                         {sessionIsUser &&
                             <div>
                                 <CreateAdvertisementForm
+                                    session={session}
                                     afterSubmission={ad => setLocaleAdvertisements(old => [...old, ad])}
                                 />
                             </div>

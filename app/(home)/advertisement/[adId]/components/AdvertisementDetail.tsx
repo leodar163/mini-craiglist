@@ -19,24 +19,31 @@ import {
 } from "@/app/actions/advertisement.actions";
 import {Spinner} from "@/components/ui/spinner";
 import {Item, ItemContent} from "@/components/ui/item";
-import {MapPinIcon} from "lucide-react";
+import {Mail, MapPinIcon} from "lucide-react";
 import PageLayout from "@/components/ui/page-layout";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import UpdateAdvertisementForm from "@/app/(home)/advertisement/[adId]/components/update-advertisement-form";
 import Link from "next/link";
+import {Discussion} from "@/lib/types/discussion";
+import {useRouter} from "next/navigation";
+import {createDiscussion} from "@/app/actions/discussion.actions";
+import {DiscussionMininfo} from "@/app/(home)/messaging/components/discussion-mininfo";
 
 export interface AdvertisementDetailProps {
     advertisement: Advertisement;
+    discussions: Discussion[];
     session: Session;
 }
 
-export default function AdvertisementDetail({advertisement, session}: AdvertisementDetailProps) {
+export default function AdvertisementDetail({advertisement, discussions, session}: AdvertisementDetailProps) {
     const [localAdvertisement, setLocalAdvertisement] = useState(advertisement);
     const [archiveError, setArchiveError] = useState<Error | null>(null);
+    const [discussionError, setDiscussionError] = useState<Error | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const router = useRouter();
 
     const sessionIsAuthor = useMemo(() =>
-        session.user.id == localAdvertisement.author.id,
+            session.user.id == localAdvertisement.author.id,
         [session, localAdvertisement.author]
     );
 
@@ -81,11 +88,34 @@ export default function AdvertisementDetail({advertisement, session}: Advertisem
         setLocalAdvertisement(old => ({...old, status: AdvertisementStatus.PUBLISHED}));
     }
 
+    async function onSendingMessage() {
+        let discussionId = discussions[0]?.id;
+
+        if (discussionId == null) {
+            setDiscussionError(null);
+
+            const discussionResult = await createDiscussion({
+                sender: session.user,
+                advertisement: advertisement,
+            })
+
+            if (!discussionResult.success) {
+                console.error(discussionResult.error);
+                setDiscussionError(discussionResult.error);
+                return;
+            }
+
+            discussionId = discussionResult.value.id;
+        }
+
+        router.push(`/messaging?discussionId=${discussionId}`);
+    }
+
     return (
         <PageLayout>
             <div className={"flex flex-col mb-16 w-124"}>
                 <div className={"text-xl text-foreground/30"}>Annonce</div>
-                <FieldGroup>
+                <FieldGroup className={"mb-40"}>
                     <Field orientation={"horizontal"} className={"gap-4"}>
                         <div className={"text-2xl"}>{localAdvertisement.title}</div>
                         {
@@ -126,7 +156,8 @@ export default function AdvertisementDetail({advertisement, session}: Advertisem
                             <span className={"text-foreground/50"}>
                                 {localAdvertisement.createdAt.toLocaleDateString()}
                             </span>
-                            par <Link className={"underline hover:text-foreground/75"} href={`/profile/${localAdvertisement.author.id}`}>{localAdvertisement.author.pseudo}</Link>
+                            par <Link className={"underline hover:text-foreground/75"}
+                                      href={`/profile/${localAdvertisement.author.id}`}>{localAdvertisement.author.pseudo}</Link>
                         </FieldLabel>
                     </Field>
                     <Field orientation={"horizontal"} className={"gap-4"}>
@@ -166,6 +197,20 @@ export default function AdvertisementDetail({advertisement, session}: Advertisem
                                     supprimer
                                 </Button>
                                 {archiveError && <FieldError errors={[archiveError]}/>}
+                            </div>
+                        }
+                        {
+                            !sessionIsAuthor && <div>
+                                <Button
+                                    variant={"outline"}
+                                    onClick={onSendingMessage}
+                                >
+                                    <Mail/>
+                                    Envoyer un message
+                                </Button>
+                                {discussionError &&
+                                    <FieldError errors={[discussionError]}/>
+                                }
                             </div>
                         }
                     </Field>
@@ -215,16 +260,34 @@ export default function AdvertisementDetail({advertisement, session}: Advertisem
                     <Field>
                         <FieldLabel>Tarif</FieldLabel>
                         <div className={"text-ms"}>
-                            {(() => {switch (localAdvertisement.type) {
-                                case AdvertisementType.OFFER:
-                                    return "demande : "
-                                case AdvertisementType.REQUEST:
-                                    return "propose : "
-                            }})()}
+                            {(() => {
+                                switch (localAdvertisement.type) {
+                                    case AdvertisementType.OFFER:
+                                        return "demande : "
+                                    case AdvertisementType.REQUEST:
+                                        return "propose : "
+                                }
+                            })()}
                             {localAdvertisement.pricing != AdvertisementPricing.FREE ? `${localAdvertisement.price}€` : "gratuit"}
                             {localAdvertisement.pricing == AdvertisementPricing.HOURLY && " par heure"}
                         </div>
                     </Field>
+                    {sessionIsAuthor &&
+                        <Field>
+                            <FieldLabel key={"title"}>Discussions</FieldLabel>
+                            <div className={"flex flex-wrap gap-3"}>
+                                {
+                                    discussions.map((discussion, index) => (
+                                        <DiscussionMininfo
+                                            discussion={discussion}
+                                            key={index}
+                                            className={"border rounded-lg"}
+                                        />
+                                    ))
+                                }
+                            </div>
+                        </Field>
+                    }
                 </FieldGroup>
             </div>
         </PageLayout>

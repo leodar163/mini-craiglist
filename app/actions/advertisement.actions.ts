@@ -10,7 +10,7 @@ import {
 import {ServerActionResponse} from "@/lib/types/actions";
 import {DBTables, getDB} from "@/lib/db/surrealdb";
 import {getSession} from "@/app/actions/auth.actions";
-import {and, contains, containsAny, eq, gte, inside, lte, or, RecordId, surql} from "surrealdb";
+import {and, contains, containsAny, eq, gte, inside, lte, or, RecordId} from "surrealdb";
 
 export async function createAdvertisement(create: CreateAdvertisement): ServerActionResponse<Advertisement> {
     const session = await getSession();
@@ -30,7 +30,9 @@ export async function createAdvertisement(create: CreateAdvertisement): ServerAc
         await db.close();
         db = await getDB();
 
-        const eagerAdResult = await db.select<AdvertisementDB>(adResult.id).fetch("author");
+        const eagerAdResult = await db
+            .select<AdvertisementDB>(adResult.id)
+            .fetch("author");
 
         if (eagerAdResult == null) {
             return {

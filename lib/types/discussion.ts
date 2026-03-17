@@ -11,9 +11,19 @@ export interface Discussion extends Common {
     messages: Message[];
 }
 
+export interface CreateDiscussion {
+    sender: User;
+    advertisement: Advertisement;
+}
+
 export interface DiscussionDB extends CommonDB {
     sender: UserDB;
     advertisement: AdvertisementDB;
+}
+
+export interface CreateDiscussionDB extends CommonDB {
+    sender: RecordId;
+    advertisement: RecordId;
 }
 
 export async function convertDiscussionDB(...discussions: DiscussionDB[]): Promise<Discussion[]> {
@@ -27,7 +37,6 @@ async function convertDiscussionDBUnique(discussion: DiscussionDB): Promise<Disc
     if (!messages.success) {
         throw messages.error;
     }
-
     return {
         ...discussion,
         id: discussion.id.id.toString(),

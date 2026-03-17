@@ -1,7 +1,6 @@
 'use client';
 
 import {useState} from "react";
-import {useRouter} from "next/navigation";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import {valibotResolver} from "@hookform/resolvers/valibot";
 import {CreateAdvertisementData, createAdvertisementSchema} from "@/lib/validation-schemas/create-advertisement-data";
@@ -12,7 +11,7 @@ import {
     AdvertisementType, translateAdvertisementCategory, translateAdvertisementModality, translateAdvertisementPricing,
     translateAdvertisementType
 } from "@/lib/types/advertisement";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {CardFooter} from "@/components/ui/card";
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {InputGroup, InputGroupAddon, InputGroupInput, InputGroupTextarea} from "@/components/ui/input-group";
@@ -29,23 +28,21 @@ import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
 import {createAdvertisement} from "@/app/actions/advertisement.actions";
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
-import BadgeList from "@/components/ui/badge-list";
 import {
     Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput,
     ComboboxContent,
     ComboboxEmpty,
-    ComboboxInput,
     ComboboxItem,
     ComboboxList, ComboboxValue
 } from "@/components/ui/combobox";
-import {Badge} from "@/components/ui/badge";
-import {TrashIcon} from "lucide-react";
+import {Session} from "@/lib/types/session";
 
 export interface CreateAdvertisementFormProps {
+    session: Session;
     afterSubmission?: (advertisement: Advertisement) => void;
 }
 
-export default function CreateAdvertisementForm({afterSubmission}: CreateAdvertisementFormProps) {
+export default function CreateAdvertisementForm({session, afterSubmission}: CreateAdvertisementFormProps) {
     const [validating, setValidating] = useState(false);
     const [globalError, setGlobalError] = useState<Error | null>(null);
     const [open, setOpen] = useState<boolean>(false);
@@ -74,7 +71,7 @@ export default function CreateAdvertisementForm({afterSubmission}: CreateAdverti
         setValidating(true);
         setGlobalError(null);
 
-        const advertisementResult = await createAdvertisement({...data});
+        const advertisementResult = await createAdvertisement({...data, author: session.user});
 
         if (!advertisementResult.success) {
             setGlobalError(advertisementResult.error);
