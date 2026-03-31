@@ -1,6 +1,10 @@
+"use client";
+
 import {Discussion, Message} from "@/lib/types/discussion";
 import Link from "next/link";
 import {cn} from "@/lib/utils";
+import {useMemo, useState} from "react";
+import {useMessageSubscription} from "@/app/hooks/dbSubscription";
 
 export interface DiscussionCardProps {
     discussion: Discussion;
@@ -8,7 +12,11 @@ export interface DiscussionCardProps {
 }
 
 export function DiscussionMininfo({discussion, className}: DiscussionCardProps) {
-    const lastMessage: Message | undefined = discussion.messages[discussion.messages.length - 1];
+    const [messages, setMessages] = useState<Message[]>(discussion.messages);
+    const lastMessage: Message | undefined = useMemo(() => messages[messages.length - 1], [messages]);
+
+    useMessageSubscription("CREATE", discussion.id, message => setMessages([...messages, message]));
+
     return (
         <Link
             className={cn(`rounded hover:bg-foreground/20 hover:cursor-pointer`, className)}

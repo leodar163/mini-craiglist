@@ -23,8 +23,11 @@ export function DiscussionList({discussions, currentDiscussionId}: DiscussionLis
             <div className={"text-xl text-foreground/30 mb-1"}>Discussions</div>
             {localDiscussions.map((discussion: Discussion, index: number) =>
                 [
-                    <DiscussionMininfo discussion={discussion} key={index}
-                                       className={currentDiscussionId === discussion.id ? "bg-foreground/10" : ""}/>,
+                    <DiscussionMininfo
+                        discussion={discussion}
+                        key={index}
+                        className={currentDiscussionId === discussion.id ? "bg-foreground/10" : ""}
+                    />,
                     <Separator key={"separator" + index}/>
                 ]
             )}

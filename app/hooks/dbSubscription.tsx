@@ -1,7 +1,7 @@
 import {LiveAction} from "surrealdb";
 import {useEffect} from "react";
 import {Discussion, Message} from "@/lib/types/discussion";
-import {cn} from "@/lib/utils";
+import {ErrorEvent} from "undici-types";
 
 export type DBFallBackContext = LiveAction;
 
@@ -10,7 +10,7 @@ export function useDiscussionSubscription(
     fallback: (discussion: Discussion) => void
 ) {
     useEffect(() => {
-        const eventSource = new EventSource('api/live/discussion');
+        const eventSource = new EventSource('/api/live/discussion');
 
         eventSource.onerror = (event) => {
             console.error(event);
@@ -43,11 +43,11 @@ export function useMessageSubscription(
 ) {
     useEffect(() => {
         const eventSource = discussionId == null
-            ? new EventSource('api/live/message')
-            : new EventSource(`api/live/message/${discussionId}`);
+            ? new EventSource('/api/live/message')
+            : new EventSource(`/api/live/message/${discussionId}`);
 
         eventSource.onerror = event => {
-            console.error(event);
+            console.error((event as unknown as ErrorEvent).message);
             eventSource.close();
         };
 

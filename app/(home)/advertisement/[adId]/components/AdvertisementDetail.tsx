@@ -8,7 +8,6 @@ import {
 } from "@/lib/types/advertisement";
 import {useMemo, useState} from "react";
 import {Session} from "@/lib/types/session";
-import {User} from "@/lib/types/user";
 import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
