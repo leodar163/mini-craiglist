@@ -57,6 +57,7 @@ export default function AdvertisementDetail({advertisement, discussions, session
         setIsLoading(true);
         const deleteResult = await deleteAdvertisement(advertisement.id);
         if (!deleteResult.success) {
+            console.error(deleteResult.error);
             setArchiveError(deleteResult.error);
             return;
         }
@@ -162,7 +163,7 @@ export default function AdvertisementDetail({advertisement, discussions, session
                     </Field>
                     <Field orientation={"horizontal"} className={"gap-4"}>
                         {
-                            sessionIsAuthor && advertisement.status === AdvertisementStatus.DRAFT &&
+                            sessionIsAuthor && localAdvertisement.status === AdvertisementStatus.DRAFT &&
                             <div className={"flex flex-col"}>
                                 <Button
                                     onClick={onPublish}
@@ -174,7 +175,7 @@ export default function AdvertisementDetail({advertisement, discussions, session
                             </div>
                         }
                         {
-                            sessionIsAuthor && advertisement.status === AdvertisementStatus.ARCHIVED &&
+                            sessionIsAuthor && localAdvertisement.status === AdvertisementStatus.ARCHIVED &&
                             <div className={"flex flex-col"}>
                                 <Button
                                     variant={"secondary"}
@@ -187,7 +188,7 @@ export default function AdvertisementDetail({advertisement, discussions, session
                             </div>
                         }
                         {
-                            sessionIsAuthor && advertisement.status !== AdvertisementStatus.ARCHIVED &&
+                            sessionIsAuthor && localAdvertisement.status !== AdvertisementStatus.ARCHIVED &&
                             <div className={"flex flex-col"}>
                                 <Button
                                     variant={"destructive"}

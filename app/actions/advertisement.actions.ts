@@ -114,9 +114,11 @@ export async function deleteAdvertisement(id: string): ServerActionResponse<unde
     const db = await getDB();
 
     try {
-        const adResult = await db.update<AdvertisementDB>(new RecordId(DBTables.advertisement, id)).content({
-            status: AdvertisementStatus.ARCHIVED,
-        });
+        const adResult = await db
+            .update<AdvertisementDB>(new RecordId(DBTables.advertisement, id))
+            .merge({
+                status: AdvertisementStatus.ARCHIVED,
+            });
 
         if (!adResult) {
             return {
@@ -148,9 +150,11 @@ export async function restoreAdvertisement(id: string): ServerActionResponse<und
     const db = await getDB();
 
     try {
-        const adResult = await db.update<AdvertisementDB>(new RecordId(DBTables.advertisement, id)).content({
-            status: AdvertisementStatus.DRAFT,
-        });
+        const adResult = await db
+            .update<AdvertisementDB>(new RecordId(DBTables.advertisement, id))
+            .merge({
+                status: AdvertisementStatus.DRAFT,
+            });
 
         if (!adResult) {
             return {
@@ -182,9 +186,11 @@ export async function publishAdvertisement(id: string): ServerActionResponse<und
     const db = await getDB();
 
     try {
-        const adResult = await db.update<AdvertisementDB>(new RecordId(DBTables.advertisement, id)).content({
-            status: AdvertisementStatus.PUBLISHED,
-        });
+        const adResult = await db
+            .update<AdvertisementDB>(new RecordId(DBTables.advertisement, id))
+            .merge({
+                status: AdvertisementStatus.PUBLISHED,
+            });
 
         if (!adResult) {
             return {
